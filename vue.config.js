@@ -14,6 +14,21 @@ module.exports = {
   // 生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)
   integrity: false,  
   // webpack相关配置
+  configureWebpack: config => { // webpack配置，值位对象时会合并配置，为方法时会改写配置
+        if (debug) { // 开发环境配置
+            config.devtool = 'cheap-module-eval-source-map'
+        } else { // 生产环境配置
+        }
+         Object.assign(config, { // 开发生产共同配置，配置别名
+             resolve: {
+                 alias: {
+                     '@': path.resolve(__dirname, './src'),
+                     '@c': path.resolve(__dirname, './src/components'),
+                    'vue$': 'vue/dist/vue.esm.js'
+                }
+            }
+         })
+    },
   chainWebpack: (config) => {
   },
   configureWebpack: (config) => {    

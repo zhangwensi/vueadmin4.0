@@ -5,84 +5,65 @@
                 <li :class="{'current':item.current}" v-for="item in navTab" :key="item.id" @click="bkShow(item)">{{item.name}}</li>
             </ul>
             <!-- 表单 -->
-            <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" class="login-form">
-                <el-form-item prop="pass" class="item-form">
-                    <label>账户</label>
-                    <el-input type="password" v-model="ruleForm2.pass" auto-complete="off"></el-input>
+            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="login-form">
+                <el-form-item prop="email" class="item-form">
+                    <label>邮箱</label>
+                    <el-input type="text" v-model="ruleForm.email" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item prop="checkPass" class="item-form">
+                <el-form-item prop="password" class="item-form">
                     <label>密码</label>
-                    <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off"></el-input>
+                    <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item prop="age" class="item-form">
+                <!-- 注册页面的二次密码确认 -->
+                <el-form-item prop="password2" class="item-form" v-if="model === 'register'">
+                    <label>请再次输入密码</label>
+                    <el-input type="password" v-model="ruleForm.password2" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item prop="code" class="item-form">
                     <label>验证码</label>
-                    <el-input v-model.number="ruleForm2.age"></el-input>
+                    <el-row :gutter="20">
+                        <el-col :span="12"><el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input></el-col>
+                        <el-col :span="12"><el-button type="success" class="block">获取验证码</el-button></el-col>
+                    </el-row>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="danger" @click="submitForm('ruleForm2')" class="block">提交</el-button>
+                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block">提交</el-button>
                 </el-form-item>
             </el-form>
         </div>
     </div>
 </template>
 <script>
+import { checkEmail, checkPass, checkCode, checkPass2} from '@/guide/check.js'
 export default {
     name: 'login',
     data(){
-        var checkAge = (rule, value, callback) => {
-            if (!value) {
-                return callback(new Error('年龄不能为空'));
-            }
-            setTimeout(() => {
-                if (!Number.isInteger(value)) {
-                callback(new Error('请输入数字值'));
-                } else {
-                if (value < 18) {
-                    callback(new Error('必须年满18岁'));
-                } else {
-                    callback();
-                }
-                }
-            }, 1000)
-        };
-        var validatePass = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请输入密码'));
-            } else {
-                if (this.ruleForm2.checkPass !== '') {
-                this.$refs.ruleForm2.validateField('checkPass');
-                }
-                callback();
-            }
-        };
-        var validatePass2 = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请再次输入密码'));
-            } else if (value !== this.ruleForm2.pass) {
-                callback(new Error('两次输入密码不一致!'));
-            } else {
-                callback();
-            }
-        };
         return{
             navTab: [
                 {name:'登录',type:'login',current:true},
                 {name:'注册',type:'register',current:false}
             ],
-            ruleForm2: {
-                pass: '',
-                checkPass: '',
-                age: ''
+            model: '',
+            // 校验列表数据
+            ruleForm: {
+                email: '',
+                password: '',
+                password2: '',
+                code: ''
             },
-            rules2: {
-                pass: [
-                    { validator: validatePass, trigger: 'blur' }
+            // 校验规则
+            rules: {
+                email: [
+                    { validator: checkEmail, trigger: 'blur' }
                 ],
-                checkPass: [
-                    { validator: validatePass2, trigger: 'blur' }
+                password: [
+                    { validator: checkPass, trigger: 'blur' }
                 ],
-                age: [
-                    { validator: checkAge, trigger: 'blur' }
+                password2: [
+                    {validator: checkPass2, trigger: 'blur'}
+                ],
+                code: [
+                    { validator: checkCode, trigger: 'blur' }
                 ]
             }
         }
@@ -93,17 +74,18 @@ export default {
                 elem.current = false
             })
             data.current = true
+            this.model = data.type
         },
         submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      }
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
+                    alert('登录成功');
+                } else {
+                    console.log('登录失败');
+                    return false;
+                }
+            })
+        }
     }
 }
 </script>
@@ -143,11 +125,13 @@ export default {
         margin-bottom: 13px;
     }
     .block {
-        margin-top: 10px;
         width: 100%;
         display: block;
         font-size: 14px;
-        line-height: 28px;
+        height: 40px;
+    }
+    .btn-login {
+        margin-top: 19px;
     }
 }
 </style>
