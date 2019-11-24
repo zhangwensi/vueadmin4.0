@@ -34,26 +34,24 @@
     </div>
 </template>
 <script>
+import { reactive, ref} from '@vue/composition-api'
 import { checkEmail, checkPass, checkCode, checkPass2} from '@/guide/check.js'
 export default {
     name: 'login',
-    data(){
-        return{
-            navTab: [
-                {name:'登录',type:'login',current:true},
-                {name:'注册',type:'register',current:false}
-            ],
-            model: '',
-            // 校验列表数据
-            ruleForm: {
-                email: '',
-                password: '',
-                password2: '',
-                code: ''
-            },
-            // 校验规则
-            rules: {
-                email: [
+    setup(props,context) {
+        const navTab = reactive([
+            {name:'登录',type:'login',current:true},
+            {name:'注册',type:'register',current:false}
+        ])
+        const model = ref('')
+        const ruleForm = reactive({
+            email: '',
+            password: '',
+            password2: '',
+            code: ''
+        })
+        const rules = reactive({
+            email: [
                     { validator: checkEmail, trigger: 'blur' }
                 ],
                 password: [
@@ -65,26 +63,31 @@ export default {
                 code: [
                     { validator: checkCode, trigger: 'blur' }
                 ]
-            }
-        }
-    },
-    methods: {
-        bkShow(data){
-            this.navTab.forEach(elem=>{
+        })
+        const bkShow = (data =>{
+            navTab.forEach(elem=>{
                 elem.current = false
             })
             data.current = true
-            this.model = data.type
-        },
-        submitForm(formName) {
-            this.$refs[formName].validate((valid) => {
-            if (valid) {
-                    alert('登录成功');
-                } else {
-                    console.log('登录失败');
-                    return false;
-                }
-            })
+            model.value = data.type
+        })
+        const submitForm = (formName =>{
+            context.refs[formName].validate((valid) => {
+                if (valid) {
+                        alert('登录成功');
+                    } else {
+                        console.log('登录失败');
+                        return false;
+                    }
+                })
+        })
+        return {
+            navTab,
+            model,
+            ruleForm,
+            rules,
+            bkShow,
+            submitForm
         }
     }
 }
