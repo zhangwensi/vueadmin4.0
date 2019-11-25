@@ -23,7 +23,7 @@
                     <label>验证码</label>
                     <el-row :gutter="20">
                         <el-col :span="12"><el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input></el-col>
-                        <el-col :span="12"><el-button type="success" class="block">获取验证码</el-button></el-col>
+                        <el-col :span="12"><el-button type="success" class="block" @click="getSms()">获取验证码</el-button></el-col>
                     </el-row>
                 </el-form-item>
                 <el-form-item>
@@ -34,6 +34,7 @@
     </div>
 </template>
 <script>
+import { GetSms } from'@/api/login.js'
 import { reactive, ref} from '@vue/composition-api'
 import { checkEmail, checkPass, checkCode, checkPass2} from '@/guide/check.js'
 export default {
@@ -43,27 +44,31 @@ export default {
             {name:'登录',type:'login',current:true},
             {name:'注册',type:'register',current:false}
         ])
+        // 模型
         const model = ref('')
+        // 验证参数
         const ruleForm = reactive({
             email: '',
             password: '',
             password2: '',
             code: ''
         })
+        // 验证规则
         const rules = reactive({
             email: [
-                    { validator: checkEmail, trigger: 'blur' }
-                ],
-                password: [
-                    { validator: checkPass, trigger: 'blur' }
-                ],
-                password2: [
-                    {validator: checkPass2, trigger: 'blur'}
-                ],
-                code: [
-                    { validator: checkCode, trigger: 'blur' }
-                ]
+                { validator: checkEmail, trigger: 'blur' }
+            ],
+            password: [
+                { validator: checkPass, trigger: 'blur' }
+            ],
+            password2: [
+                {validator: checkPass2, trigger: 'blur'}
+            ],
+            code: [
+                { validator: checkCode, trigger: 'blur' }
+            ]
         })
+        // 注册登录按钮高光
         const bkShow = (data =>{
             navTab.forEach(elem=>{
                 elem.current = false
@@ -71,6 +76,7 @@ export default {
             data.current = true
             model.value = data.type
         })
+        // 登录验证
         const submitForm = (formName =>{
             context.refs[formName].validate((valid) => {
                 if (valid) {
@@ -81,13 +87,22 @@ export default {
                     }
                 })
         })
+        // 获取验证码
+        const getSms = ()=>{
+            let userName = {
+               username : ruleForm.email
+            }
+            GetSms(userName) 
+        }
+        // VUE3.0语法要求把定义的变量、函数返回
         return {
             navTab,
             model,
             ruleForm,
             rules,
             bkShow,
-            submitForm
+            submitForm,
+            getSms
         }
     }
 }

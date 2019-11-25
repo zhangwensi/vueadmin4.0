@@ -70,6 +70,15 @@ module.exports = {
     hotOnly: false,// 
     // http 代理配置
     proxy: null,
+    proxy: {
+      '/api': {
+        target: 'http://www.web-jshtml.cn/api',
+        changeOrigin: true, // 是否允许跨域
+        pathRewrite: {
+          '^api/':''
+        }
+      }
+    },
     before: (app) => {}
   }, 
   // 第三方插件配置
