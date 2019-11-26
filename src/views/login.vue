@@ -7,22 +7,22 @@
             <!-- 表单 -->
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="login-form">
                 <el-form-item prop="email" class="item-form">
-                    <label>邮箱</label>
-                    <el-input type="text" v-model="ruleForm.email" auto-complete="off"></el-input>
+                    <label for="useremail">邮箱</label>
+                    <el-input id="useremail" type="text" v-model="ruleForm.email" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item prop="password" class="item-form">
-                    <label>密码</label>
-                    <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+                    <label for="password1">密码</label>
+                    <el-input id="password1" type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
                 </el-form-item>
                 <!-- 注册页面的二次密码确认 -->
                 <el-form-item prop="password2" class="item-form" v-if="model === 'register'">
-                    <label>请再次输入密码</label>
-                    <el-input type="password" v-model="ruleForm.password2" auto-complete="off"></el-input>
+                    <label for="password2">请再次输入密码</label>
+                    <el-input id="password2" type="password" v-model="ruleForm.password2" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item prop="code" class="item-form">
-                    <label>验证码</label>
+                    <label for="code">验证码</label>
                     <el-row :gutter="20">
-                        <el-col :span="12"><el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input></el-col>
+                        <el-col :span="12"><el-input id="code" v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input></el-col>
                         <el-col :span="12"><el-button type="success" class="block" @click="getSms()">获取验证码</el-button></el-col>
                     </el-row>
                 </el-form-item>
