@@ -27,7 +27,7 @@
                     </el-row>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block">提交</el-button>
+                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block" :disabled="btnDis">{{model}}</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -35,17 +35,21 @@
 </template>
 <script>
 import { GetSms } from'@/api/login.js'
+import { Message } from 'element-ui'
 import { reactive, ref} from '@vue/composition-api'
 import { checkEmail, checkPass, checkCode, checkPass2} from '@/guide/check.js'
 export default {
     name: 'login',
-    setup(props,context) {
+    // setup(props,context) {
+    setup(props,{refs ,root}) {
         const navTab = reactive([
             {name:'登录',type:'login',current:true},
             {name:'注册',type:'register',current:false}
         ])
         // 模型
-        const model = ref('')
+        const model = ref('登录')
+        // 按钮默认disabled
+        const btnDis = ref(true)
         // 验证参数
         const ruleForm = reactive({
             email: '',
@@ -74,7 +78,7 @@ export default {
                 elem.current = false
             })
             data.current = true
-            model.value = data.type
+            model.value = data.name
         })
         // 登录验证
         const submitForm = (formName =>{
@@ -89,10 +93,25 @@ export default {
         })
         // 获取验证码
         const getSms = ()=>{
+            // 先判断获取验证码之前的邮箱是否为空，如为空则弹出提示，函数不再继续执行
+            if(!ruleForm.name){
+                root.$message({
+                    showClose: true,
+                    message: '邮箱不能为空哦',
+                    type: "error"
+                })
+                return false
+            }
             let userName = {
                username : ruleForm.email
             }
             GetSms(userName) 
+            // 如前段未处理邮箱是否为空，则调用以下方法
+            // getSms(userName).then(response=>{
+            //     console.log(response)    
+            // }).catch(error=>{
+            //     console.log(error)
+            // })
         }
         // VUE3.0语法要求把定义的变量、函数返回
         return {
@@ -102,7 +121,8 @@ export default {
             rules,
             bkShow,
             submitForm,
-            getSms
+            getSms,
+            btnDis
         }
     }
 }
