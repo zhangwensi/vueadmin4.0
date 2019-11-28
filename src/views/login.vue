@@ -27,7 +27,7 @@
                     </el-row>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block" :disabled="btnDis">{{model}}</el-button>
+                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block" :disabled="btnDis">{{model == 'login'? '登录':'注册'}}</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -47,7 +47,7 @@ export default {
             {name:'注册',type:'register',current:false}
         ])
         // 模型
-        const model = ref('登录')
+        const model = ref('login')
         // 按钮默认disabled
         const btnDis = ref(true)
         // 验证参数
@@ -78,7 +78,7 @@ export default {
                 elem.current = false
             })
             data.current = true
-            model.value = data.name
+            model.value = data.type
         })
         // 登录验证
         const submitForm = (formName =>{
@@ -94,7 +94,7 @@ export default {
         // 获取验证码
         const getSms = ()=>{
             // 先判断获取验证码之前的邮箱是否为空，如为空则弹出提示，函数不再继续执行
-            if(!ruleForm.name){
+            if(ruleForm.email == ''){
                 root.$message({
                     showClose: true,
                     message: '邮箱不能为空哦',
@@ -102,11 +102,8 @@ export default {
                 })
                 return false
             }
-            let userName = {
-               username : ruleForm.email
-            }
-            GetSms(userName) 
-            // 如前段未处理邮箱是否为空，则调用以下方法
+            GetSms({username: ruleForm.email}) 
+            // 如前端未处理邮箱是否为空，则调用以下方法
             // getSms(userName).then(response=>{
             //     console.log(response)    
             // }).catch(error=>{

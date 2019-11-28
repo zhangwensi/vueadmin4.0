@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {  
   // 基本路径
-  publicPath: process.env.NODE_ENV === 'production' ? '' : '',  
+  publicPath: process.env.NODE_ENV === 'production' ? '' : '/',  
   // 输出文件目录
   outputDir: process.env.NODE_ENV === 'production' ? 'dist' : 'devdist',  
   // eslint-loader 是否在保存的时候检查
@@ -69,13 +69,15 @@ module.exports = {
     hot: true, // 开启热加载
     hotOnly: false,// 
     // http 代理配置
-    proxy: null,
+    // proxy: null,
     proxy: {
-      '/api': {
-        target: 'http://www.web-jshtml.cn/api',
-        changeOrigin: true, // 是否允许跨域
+      "/api": {
+        target: "http://127.0.0.1:3000/api", // 目标代理接口地址
+        secure: false,
+        changeOrigin: true, // 开启代理，在本地创建一个虚拟服务端
+        // ws: true, // 是否启用websockets
         pathRewrite: {
-          '^api/':''
+          "^/api": "/"
         }
       }
     },

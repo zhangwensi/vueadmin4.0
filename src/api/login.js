@@ -5,7 +5,7 @@ import service from '@/guide/interceptor.js'
 export function GetSms (data){
     return service.request({
         method: 'post',
-        baseURL: '/getSms',
+        baseURL: '/api/getSms',
         data// es6的写法
     })
 }

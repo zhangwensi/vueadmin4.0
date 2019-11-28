@@ -4,11 +4,12 @@
 import axios from 'axios'
 import {Message} from 'element-ui'
 //配置跨域 配置环境变量 区分生产环境与开发环境差异
-const BASEURL = process.env.NODE_ENV === 'production' ? '' : ''
+const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/api'
 const service = axios.create({
-    baseURL: BASEURL,
-    timeout: 100000
+    baseURL: BASEURL,  // http://192.168.1.18:8080/api  == http://127.0.0.1:3000/api
+    timeout: 100000,
 })
+
 
 
 /*
