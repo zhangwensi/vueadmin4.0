@@ -39,10 +39,9 @@ service.interceptors.response.use(function (response) {
         })
         // 返回错误信息给对于接口的定义的调用方法(api下的 login中getSms,需要将改函数请求 return出去，以便login页面getSms方法能拿到此处的值)
         return Promise.reject(data)
-    } else {
+    }
         return response;
         // return Promise.resolve
-    }
     }, function (error) {
     // 响应错误做的事情
     return Promise.reject(error);

@@ -13,3 +13,10 @@ export function GetSms (data){
 /*
 **注册接口
 */
+export function Register(data) {
+    return service.request({
+        method: 'post',
+        baseURL: '/api/register',
+        data
+    })
+}

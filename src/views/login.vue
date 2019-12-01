@@ -11,8 +11,8 @@
                     <el-input id="useremail" type="text" v-model="ruleForm.email" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item prop="password" class="item-form">
-                    <label for="password1">密码</label>
-                    <el-input id="password1" type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+                    <label for="password">密码</label>
+                    <el-input id="password" type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
                 </el-form-item>
                 <!-- 注册页面的二次密码确认 -->
                 <el-form-item prop="password2" class="item-form" v-if="model === 'register'">
@@ -23,21 +23,21 @@
                     <label for="code">验证码</label>
                     <el-row :gutter="20">
                         <el-col :span="12"><el-input id="code" v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input></el-col>
-                        <el-col :span="12"><el-button type="success" class="block" @click="getSms()">获取验证码</el-button></el-col>
+                        <el-col :span="12"><el-button type="success" class="block" @click="getSms()" :disabled = "buttonStatus.buttonStatu">{{ buttonStatus.buttonContext }}</el-button></el-col>
                     </el-row>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block" :disabled="btnDis">{{model == 'login'? '登录':'注册'}}</el-button>
+                    <el-button type="danger" @click="submitForm('ruleForm')" class="btn-login block" :disabled="btnDis">{{model === 'login'? '登录':'注册'}}</el-button>
                 </el-form-item>
             </el-form>
         </div>
     </div>
 </template>
 <script>
-import { GetSms } from'@/api/login.js'
+import { GetSms, Register } from'@/api/login.js'
 import { Message } from 'element-ui'
-import { reactive, ref} from '@vue/composition-api'
-import { checkEmail, checkPass, checkCode, checkPass2} from '@/guide/check.js'
+import { reactive, ref } from '@vue/composition-api'
+import { validEmail, validPass } from '@/guide/check.js'
 export default {
     name: 'login',
     // setup(props,context) {
@@ -50,6 +50,8 @@ export default {
         const model = ref('login')
         // 按钮默认disabled
         const btnDis = ref(true)
+        // 设置倒计时
+        const timer = ref(null)
         // 验证参数
         const ruleForm = reactive({
             email: '',
@@ -66,11 +68,16 @@ export default {
                 { validator: checkPass, trigger: 'blur' }
             ],
             password2: [
-                {validator: checkPass2, trigger: 'blur'}
+                { validator: checkPass2, trigger: 'blur'}
             ],
             code: [
                 { validator: checkCode, trigger: 'blur' }
             ]
+        })
+        // 验证码参数
+        const buttonStatus = reactive({
+            buttonStatu: false,
+            buttonContext: '获取验证码'
         })
         // 注册登录按钮高光
         const bkShow = (data =>{
@@ -79,20 +86,82 @@ export default {
             })
             data.current = true
             model.value = data.type
+            // 重置表单内容(json的2种写法择一)
+            refs['ruleForm'].resetFields()
+            // refs.ruleForm.resetFields()
         })
-        // 登录验证
-        const submitForm = (formName =>{
-            context.refs[formName].validate((valid) => {
-                if (valid) {
-                        alert('登录成功');
+        // 用户名验证
+        const checkEmail = (rule, value, callback)=>{
+            if (value === '') {
+                callback(new Error('请输入邮箱'))
+            } else if(validEmail(value)) {
+                callback(new Error('邮箱格式不正确'))
+            } else {
+                callback()
+            }
+        }
+        // 登录页面密码验证
+        const checkPass = (rule, value, callback)=>{
+            if(value === '') {
+                callback(new Error('请输入密码'))
+            } else if(validPass(value)) {
+                callback('密码不正确，请输入6至15位区分大小写包含特殊字符的密码')
+            } else {
+                callback()
+            }
+        }
+        // 验证码验证
+        const checkCode = (rule, value, callback) => {
+            if (!value) {
+                return callback(new Error('验证码不能为空'));
+            }
+            setTimeout(() => {
+                if (!Number.isInteger(value)) {
+                    callback(new Error('请输入6位数字值'));
                     } else {
-                        console.log('登录失败');
-                        return false;
+                        callback()
+                }
+            }, 1000)
+        }
+        const checkPass2 = (rule, value, callback)=> {
+            ruleForm.password2 = stripscript(value)
+            value = ruleForm.password2
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.ruleForm.password) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        }
+        // 登录验证
+        const submitForm = (ruleForm =>{
+            refs['ruleForm'].validate((valid) => {
+                if (valid) {
+                    let requestData = {
+                        username: ruleForm.email,
+                        password: ruleForm.password,
+                        code: ruleForm.code
                     }
-                })
+                    // 先写注册部分的逻辑
+                    Register(requestData).then(response=>{
+                        let data = response.data
+                        root.$message({
+                            message: data.message,
+                            type: 'success'
+                        })
+                    }).then(err=>{
+                        console.log(err)
+                    })
+                } else {
+                    console.log(navTab.name+'失败');
+                    return false;
+                }
+            })
         })
         // 获取验证码
         const getSms = ()=>{
+            let reg = /^[A-Za-z\d]+[A-Za-z\d\-_\.]*@([A-Za-z\d]+[A-Za-z\d\-]*\.)+[A-Za-z]{2,4}$/
             // 先判断获取验证码之前的邮箱是否为空，如为空则弹出提示，函数不再继续执行
             if(ruleForm.email == ''){
                 root.$message({
@@ -102,13 +171,58 @@ export default {
                 })
                 return false
             }
-            GetSms({username: ruleForm.email}) 
+            if(!reg.test(ruleForm.email)){
+                root.$message({
+                    showClose: true,
+                    message: '邮箱格式有误',
+                    type: "error"
+                })
+                return false
+            }
+            // 将获取验证码字段变为发送中并将该按钮置位禁用状态
+            buttonStatus.buttonStatu = true
+            buttonStatus.buttonContext = '发送中'
+            // 模拟网络请求延迟
+            setTimeout(()=>{
+                    GetSms({
+                        username: ruleForm.email,
+                        mode: model.value
+                    }).then(response=>{
+                        let data = response.data
+                        root.$message({
+                            message: data.message,
+                            type: 'success'
+                    })
+                    // 启用登录/注册按钮
+                    btnDis.value = false
+                    // 倒计时  调用定时器
+                    timeDown(60)
+                    console.log(response)
+                }).then(err=>{
+                    console.log(err)
+                })
+            },3000)
             // 如前端未处理邮箱是否为空，则调用以下方法
             // getSms(userName).then(response=>{
             //     console.log(response)    
             // }).catch(error=>{
             //     console.log(error)
             // })
+        }
+
+        // 定时器函数
+        const timeDown = (number)=>{
+            let time = number
+            timer.value = setInterval(()=>{
+                time--
+                if(time === 0) {
+                    clearInterval(timer.value)
+                    buttonStatus.buttonStatu = false
+                    buttonStatus.buttonContext = '再次获取'
+                }else {
+                    buttonStatus.buttonContext = `倒计时${time}秒`
+                }
+            },1000)
         }
         // VUE3.0语法要求把定义的变量、函数返回
         return {
@@ -119,7 +233,8 @@ export default {
             bkShow,
             submitForm,
             getSms,
-            btnDis
+            btnDis,
+            buttonStatus
         }
     }
 }
