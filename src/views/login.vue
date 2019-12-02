@@ -42,6 +42,52 @@ export default {
     name: 'login',
     // setup(props,context) {
     setup(props,{refs ,root}) {
+        // 用户名验证
+        let checkEmail = (rule, value, callback)=>{
+            if (value === '') {
+                callback(new Error('请输入邮箱'))
+            } else if(validEmail(value)) {
+                callback(new Error('邮箱格式不正确'))
+            } else {
+                callback()
+            }
+        }
+        // 登录页面密码验证
+        let checkPass = (rule, value, callback)=>{
+            if(value === '') {
+                callback(new Error('请输入密码'))
+            } else if(validPass(value)) {
+                callback('密码不正确，请输入6至15位区分大小写包含特殊字符的密码')
+            } else {
+                callback()
+            }
+        }
+        // 验证码验证
+        let checkCode = (rule, value, callback) => {
+            console.log(value)
+            if (!value) {
+                return callback(new Error('验证码不能为空'));
+            }
+            setTimeout(() => {
+                if (!Number.isInteger(value)) {
+                    callback(new Error('请输入6位验证码'));
+                    } else {
+                        callback()
+                }
+            }, 1000)
+        }
+        // 再次确认密码
+        let checkPass2 = (rule, value, callback)=> {
+            if(model.value === 'login') {callback()}
+            value = ruleForm.password2
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value != ruleForm.password) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        }
         const navTab = reactive([
             {name:'登录',type:'login',current:true},
             {name:'注册',type:'register',current:false}
@@ -89,72 +135,59 @@ export default {
             // 重置表单内容(json的2种写法择一)
             refs['ruleForm'].resetFields()
             // refs.ruleForm.resetFields()
+            // 点击注册/登录按钮时 如果定时器有则先停定时器 按钮恢复为获取验证码状态
+            clearInterval(timer.value)
+            buttonStatus.buttonStatu = false
+            buttonStatus.buttonContext = '获取验证码'
         })
-        // 用户名验证
-        const checkEmail = (rule, value, callback)=>{
-            if (value === '') {
-                callback(new Error('请输入邮箱'))
-            } else if(validEmail(value)) {
-                callback(new Error('邮箱格式不正确'))
-            } else {
-                callback()
-            }
-        }
-        // 登录页面密码验证
-        const checkPass = (rule, value, callback)=>{
-            if(value === '') {
-                callback(new Error('请输入密码'))
-            } else if(validPass(value)) {
-                callback('密码不正确，请输入6至15位区分大小写包含特殊字符的密码')
-            } else {
-                callback()
-            }
-        }
-        // 验证码验证
-        const checkCode = (rule, value, callback) => {
-            if (!value) {
-                return callback(new Error('验证码不能为空'));
-            }
-            setTimeout(() => {
-                if (!Number.isInteger(value)) {
-                    callback(new Error('请输入6位数字值'));
-                    } else {
-                        callback()
-                }
-            }, 1000)
-        }
-        const checkPass2 = (rule, value, callback)=> {
-            ruleForm.password2 = stripscript(value)
-            value = ruleForm.password2
-            if (value === '') {
-                callback(new Error('请再次输入密码'));
-            } else if (value !== this.ruleForm.password) {
-                callback(new Error('两次输入密码不一致!'));
-            } else {
-                callback();
-            }
-        }
         // 登录验证
         const submitForm = (ruleForm =>{
             refs['ruleForm'].validate((valid) => {
                 if (valid) {
-                    let requestData = {
-                        username: ruleForm.email,
-                        password: ruleForm.password,
-                        code: ruleForm.code
-                    }
-                    // 先写注册部分的逻辑
-                    Register(requestData).then(response=>{
-                        let data = response.data
-                        root.$message({
-                            message: data.message,
-                            type: 'success'
+                    // 注册部分************************************
+                    if(model.value === 'register') {
+                        let requestData = {
+                            username: ruleForm.email,
+                            password: ruleForm.password,
+                            code: ruleForm.code
+                        }
+                        Register(requestData).then(response=>{
+                            let data = response.data
+                            root.$message({
+                                message: data.message,
+                                type: 'success'
+                            })
+                            // 注册成功后自动跳转至登录状态
+                            bkShow(navTab[0])
+                        }).then(err=>{
+                            console.log(err)
                         })
-                    }).then(err=>{
-                        console.log(err)
-                    })
+                    } else {
+                        // 登录部分************************************
+                        let requestData = {
+                            username: ruleForm.email,
+                            password: ruleForm.password
+                        }
+                        Login(requestData).then(response=>{
+                            const data = response.data
+                            root.$message({
+                                message: data.message,
+                                type: 'success'
+                            })
+                            console.log(data)
+                        }).then(err=>{
+                            console.log(err)
+                        })
+                    }
                 } else {
-                    console.log(navTab.name+'失败');
+                    root.$message({
+                        showClose: true,
+                        message: '参数不全，提交失败',
+                        type: 'error'
+                    })
+                    clearInterval(timer.value)
+                    buttonStatus.buttonStatu = false
+                    buttonStatus.buttonContext = '获取验证码'
                     return false;
                 }
             })
