@@ -34,7 +34,7 @@
     </div>
 </template>
 <script>
-import { GetSms, Register } from'@/api/login.js'
+import { GetSms, Register, Login } from'@/api/login.js'
 import { Message } from 'element-ui'
 import { reactive, ref } from '@vue/composition-api'
 import { validEmail, validPass } from '@/guide/check.js'
@@ -145,6 +145,7 @@ export default {
             refs['ruleForm'].validate((valid) => {
                 if (valid) {
                     // 注册部分************************************
+                    // 后期需增加加密插件
                     if(model.value === 'register') {
                         let requestData = {
                             username: ruleForm.email,
@@ -175,6 +176,7 @@ export default {
                                 type: 'success'
                             })
                             console.log(data)
+                            root.$router.push('/home')
                         }).then(err=>{
                             console.log(err)
                         })
