@@ -1,13 +1,15 @@
 <template>
     <div id="nav-wrap">
-        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" background-color="transparent" text-color="#fff">
-            <el-submenu index="1">
-                <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span slot="title">导航一</span>
-                </template>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-            </el-submenu>
+        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" :collapse="isCollapse" background-color="transparent" text-color="#fff" router>
+            <template v-for="(item,index) in routerdata">
+                <el-submenu v-if="!item.hidden"  :key="item.id" :index="index">
+                    <template slot="title">
+                        <i class="el-icon-location"></i>
+                        <span slot="title">{{item.meta.name}}</span>
+                    </template>
+                        <el-menu-item v-for="subItem in item.children" :key="subItem.id"  :index="subItem.path">{{subItem.meta.name}}</el-menu-item>
+                </el-submenu>
+            </template>
         </el-menu>
     </div>
 </template>
@@ -17,8 +19,12 @@ import { ref, reactive } from '@vue/composition-api'
 export default {
     setup(props, {refs, root}) {
         const isCollapse = ref(false)
+        // 获取路由信息
+        const routerdata = reactive(root.$router.options.routes)
+        console.log(routerdata)
         return {
-            isCollapse
+            isCollapse,
+            routerdata
         }
     }
 }
