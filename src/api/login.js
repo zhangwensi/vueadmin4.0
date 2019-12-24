@@ -5,7 +5,7 @@ import service from '@/guide/interceptor.js'
 export function GetSms (data){
     return service.request({
         method: 'post',
-        baseURL: '/api/getSms',
+        baseURL: '/api/getSms', // 后端对应接口
         data// es6的写法
     })
 }
@@ -17,6 +17,15 @@ export function Register(data) {
     return service.request({
         method: 'post',
         baseURL: '/api/register',
+        data
+    })
+}
+// 登录接口
+
+export function Login(data) {
+    return service.request({
+        baseURL: '/api/Login',
+        method: 'post',
         data
     })
 }
