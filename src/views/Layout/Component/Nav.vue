@@ -2,7 +2,7 @@
     <div id="nav-wrap">
         <el-menu default-active="1-4-1" class="el-menu-vertical-demo" :collapse="isCollapse" background-color="transparent" text-color="#fff" router>
             <template v-for="(item,index) in routerdata">
-                <el-submenu v-if="!item.hidden"  :key="item.id" :index="index">
+                <el-submenu v-if="!item.hidden"  :key="item.id" :index="toString(index)">
                     <template slot="title">
                         <i class="el-icon-location"></i>
                         <span slot="title">{{item.meta.name}}</span>
@@ -11,9 +11,9 @@
                 </el-submenu>
             </template>
         </el-menu>
+        <svg-icon />
     </div>
 </template>
-
 <script>
 import { ref, reactive } from '@vue/composition-api'
 export default {
@@ -39,5 +39,8 @@ export default {
     width: $MenuNav;
     height: 100vh;
     background-color: #344a5f;
+    .el-menu {
+        border-right: none;
+    }
 }
 </style>

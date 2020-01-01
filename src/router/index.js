@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import Layout from '../views/Layout/home.vue';
 
 Vue.use(VueRouter);
 
@@ -28,7 +29,8 @@ const routes = [
       name: "控制台"
     },
     redirect: '/index', // 重定向至子路由的index页面
-    component: ()=>import ('../views/Layout/home.vue'),
+    // component: ()=>import ('../views/Layout/home.vue'),
+    component: Layout,
     children: [
       {
         path: '/index',
@@ -46,7 +48,8 @@ const routes = [
     meta: {
       name: "信息管理"
     },
-    component: () =>import('../views/Layout/home.vue'),
+    // component: ()=>import ('../views/Layout/home.vue'),
+    component: Layout,
     children: [
       {
         path: '/infoIndex',
@@ -72,7 +75,8 @@ const routes = [
     meta: {
       name: "用户管理"
     },
-    component: () =>import('../views/Layout/home.vue'),
+    // component: ()=>import ('../views/Layout/home.vue'),
+    component: Layout,
     children: [
       {
         path: '/userInfo',

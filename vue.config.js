@@ -14,22 +14,38 @@ module.exports = {
   // 生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)
   integrity: false,  
   // webpack相关配置
-  configureWebpack: config => { // webpack配置，值位对象时会合并配置，为方法时会改写配置
-        if (debug) { // 开发环境配置
-            config.devtool = 'cheap-module-eval-source-map'
-        } else { // 生产环境配置
-        }
-         Object.assign(config, { // 开发生产共同配置，配置别名
-             resolve: {
-                 alias: {
-                     '@': path.resolve(__dirname, './src'),
-                     '@c': path.resolve(__dirname, './src/components'),
-                    'vue$': 'vue/dist/vue.esm.js'
-                }
-            }
-         })
-    },
+  // configureWebpack: config => { // webpack配置，值位对象时会合并配置，为方法时会改写配置
+  //       if (debug) { // 开发环境配置
+  //           config.devtool = 'cheap-module-eval-source-map'
+  //       } else { // 生产环境配置
+  //       }
+  //        Object.assign(config, { // 开发生产共同配置，配置别名
+  //            resolve: {
+  //                alias: {
+  //                   'vue$': 'vue/dist/vue.js',
+  //                   '@': path.resolve(__dirname, './src'),
+  //                   '@c': path.resolve(__dirname, './src/components'),
+  //                   // 'vue$': 'vue/dist/vue.esm.js'
+  //               }
+  //           }
+  //        })
+  //   },
   chainWebpack: (config) => {
+    // 一个规则里的 基础Loader
+    // svg是个基础loader
+    const svgRule = config.module.rule('svg')
+
+    // 清除已有的所有 loader。
+    // 如果你不这样做，接下来的 loader 会附加在该规则现有的 loader 之后。
+    svgRule.uses.clear()
+
+    // 添加要替换的 loader
+    svgRule
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]'
+      })
   },
   configureWebpack: (config) => {    
   if (process.env.NODE_ENV === 'production') {      
@@ -37,7 +53,15 @@ module.exports = {
       config.mode = 'production'
     } else {      
       // 开发环境
-      config.mode = 'development'
+      config.mode = 'development',
+      config.resolve= {
+        extensions: ['.js','.json','.vue'],
+        alias: {
+          'vue': 'vue/dist/vue.js',// 添加全局组件时 因默认的是runtime模式，需更改为vue.js才可作用，估新建一个vue配置指向main.js中的vue指向
+          '@': path.resolve(__dirname, './src'),
+          '@c': path.resolve(__dirname, './src/components'),
+        }
+      }
     }
   },  
   // css相关配置

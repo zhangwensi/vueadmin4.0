@@ -5,11 +5,14 @@ import router from "./router";
 import store from "./store";
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+// 引入全局组件
+import './icons/index.js'
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI)
 Vue.use(VueCompositionApi)
 
+// runtime模式
 new Vue({
   router,
   store,
