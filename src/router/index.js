@@ -47,7 +47,7 @@ const routes = [
     path: "/info",
     name: "Info",
     meta: {
-      icon: "menu",
+      icon: "info",
       name: "信息管理"
     },
     // component: ()=>import ('../views/Layout/home.vue'),

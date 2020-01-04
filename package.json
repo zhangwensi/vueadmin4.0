@@ -33,6 +33,7 @@
     "svg-sprite-loader": "^3.9.2",
     "svgo": "^1.1.0",
     "svgo-loader": "^2.1.0",
+    "url-loader": "^3.0.0",
     "vue-cli-plugin-svg-sprite": "^1.0.0",
     "vue-template-compiler": "^2.6.10"
   }

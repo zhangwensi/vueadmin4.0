@@ -1,6 +1,17 @@
 <template>
   <div id="header-wrap">
-    头部
+    <div class="pull-left header-icon">
+      <svg-icon className="menu" iconClass="menu"></svg-icon>
+    </div>
+    <div class="pull-right">
+      <div class="user-info pull-left">
+        <img src="@/assets/user.jpg" alt="">
+        管理员
+      </div>
+      <div class="exit-icon pull-right">
+        <svg-icon className="exit" iconClass="exit"></svg-icon>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -16,6 +27,33 @@ export default {};
   right: 0px;
   height: 75px;
   background-color: #fff;
-  // -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);
+  line-height: 75px;
+  svg {
+    width: 25px;
+    height: 25px;
+    font-size: 25px;
+    cursor: pointer;
+    margin-bottom: -8px;
+  }
+}
+.header-icon {
+  padding: 0 32px;
+}
+.user-info {
+  padding: 0 28px;
+  border-right: 1px solid #f7f7f7;
+  img {
+    width: 25px;
+    border-radius: 50%;
+    padding: 0px 28px;
+    margin-bottom: -8px;
+  }
+}
+.exit-icon {
+  padding: 0 28px;
+  + svg {
+    margin-bottom: -8px;
+  }
 }
 </style>

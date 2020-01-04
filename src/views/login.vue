@@ -328,6 +328,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "./src/styles/main.scss";
 .login {
   background: #344a5f;
   height: 100vh;
