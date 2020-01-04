@@ -1,6 +1,6 @@
 <template>
   <div id="header-wrap">
-    <div class="pull-left header-icon">
+    <div class="pull-left header-icon" @click="changeNav">
       <svg-icon className="menu" iconClass="menu"></svg-icon>
     </div>
     <div class="pull-right">
@@ -15,7 +15,19 @@
   </div>
 </template>
 <script>
-export default {};
+import { ref, reactive } from '@vue/composition-api'
+export default {
+  name: 'Header',
+  setup(props, { root ,refs}){
+    const changeNav = ()=> {
+      root.$store.commit('SET_COLLOSPE')
+    }
+
+    return {
+      changeNav
+    }
+  }
+};
 </script>
 
 <style lang="scss" scopde>
@@ -27,7 +39,9 @@ export default {};
   right: 0px;
   height: 75px;
   background-color: #fff;
-  -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);
+  // -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);  v-2019-12-29老版本
+  @include webkit(box-shadow,0 3px 16px 0 rgba(0, 0, 0, 0.1));
+  @include webkit(transition,all 0.3s ease 0s);
   line-height: 75px;
   svg {
     width: 25px;
@@ -54,6 +68,16 @@ export default {};
   padding: 0 28px;
   + svg {
     margin-bottom: -8px;
+  }
+}
+.open {
+  #header-wrap {
+    left: $MenuNav;
+  }
+}
+.close {
+  #header-wrap {
+    left: $MinMenu;
   }
 }
 </style>

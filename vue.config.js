@@ -56,14 +56,14 @@ module.exports = {
     } else {
       // 开发环境
       (config.mode = "development"),
-        (config.resolve = {
-          extensions: [".js", ".json", ".vue"],
-          alias: {
-            vue: "vue/dist/vue.js", // 添加全局组件时 因默认的是runtime模式，需更改为vue.js才可作用，估新建一个vue配置指向main.js中的vue指向
-            "@": path.resolve(__dirname, "./src"),
-            "@c": path.resolve(__dirname, "./src/components")
-          }
-        });
+      (config.resolve = {
+        extensions: [".js", ".json", ".vue"],
+        alias: {
+          vue: "vue/dist/vue.js", // 添加全局组件时 因默认的是runtime模式，需更改为vue.js才可作用，估新建一个vue配置指向main.js中的vue指向
+          "@": path.resolve(__dirname, "./src"),
+          "@c": path.resolve(__dirname, "./src/components")
+        }
+      })
     }
   },
   // css相关配置

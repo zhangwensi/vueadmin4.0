@@ -22,15 +22,28 @@ export default {};
   padding-top: $Header +30;
   padding-left: $MenuNav +30;
   padding-right: 30px;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
+  @include webkit(box-sizing,border-box);
+  @include webkit(transition,all 0.3s ease 0s);
+  // box-sizing: border-box;  v-2020-0104 版本
+  // -webkit-box-sizing: border-box; v-2020-0104 版本
 }
 .content {
   width: 100%;
   height: 100%;
   background-color: #fff;
   padding: 30px 30px 0 30px;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
+  @include webkit(box-sizing,border-box);
+  // box-sizing: border-box; v-2020-0104 版本
+  // -webkit-box-sizing: border-box; v-2020-0104 版本
+}
+.open {
+  .main-content {
+    padding-left: $MenuNav +30;
+  }
+}
+.close {
+  .main-content {
+    padding-left: $MinMenu + 30;
+  }
 }
 </style>
