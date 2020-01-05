@@ -16,3 +16,19 @@
         background-color: #f56c6c !important;
     }
 }
+
+.close {
+    .is-opened {
+        >.el-submenu__title {
+            background-color: #f56c6c !important;
+        }
+    }
+}
+.el-menu--vertical {
+    ul{
+        background-color:#344a5f !important;
+        li:hover {
+            background-color:  rgba(248,108,108,0.2) !important;
+        }
+    }
+}
