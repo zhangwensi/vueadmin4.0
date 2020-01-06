@@ -87,10 +87,11 @@
   </div>
 </template>
 <script>
-import { GetSms, Register, Login } from "@/api/login.js";
+import { GetSms, Register } from "@/api/login.js";
 import { Message } from "element-ui";
 import { reactive, ref } from "@vue/composition-api";
 import { validEmail, validPass } from "@/guide/check.js";
+import { mapState , mapMutations ,mapActions } from 'vuex';
 export default {
   name: "login",
   // setup(props,context) {
@@ -218,8 +219,7 @@ export default {
               username: ruleForm.email,
               password: ruleForm.password
             };
-            Login(requestData)
-              .then(response => {
+            root.$store.dispatch('login/userLogin',requestData).then(response => {
                 const data = response.data;
                 root.$message({
                   message: data.message,
@@ -230,7 +230,20 @@ export default {
               })
               .then(err => {
                 console.log(err);
-              });
+              })
+            // Login(requestData)
+            //   .then(response => {
+            //     const data = response.data;
+            //     root.$message({
+            //       message: data.message,
+            //       type: "success"
+            //     });
+            //     console.log(data);
+            //     root.$router.push("/home");
+            //   })
+            //   .then(err => {
+            //     console.log(err);
+            //   });
           }
         } else {
           root.$message({

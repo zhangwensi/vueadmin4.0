@@ -26,7 +26,7 @@
   </div>
 </template>
 <script>
-import { ref, reactive, computed } from "@vue/composition-api";
+import { ref, reactive, computed } from "@vue/composition-api"
 export default {
   setup(props, { refs, root }) {
     // const isCollapse = ref(false); v-2019-12-29版本
@@ -34,7 +34,7 @@ export default {
     const routerdata = reactive(root.$router.options.routes);
     // console.log(routerdata);
     // 从VUEX中的state中获取初始值 使用计算属性获取，因此值受header组件的点击事件控制,使用计算属性须有方法调用(:collapse="isCollapse")
-    const isCollapse = computed(() => root.$store.state.isCollapse)
+    const isCollapse = computed(() => root.$store.state.app.isCollapse)
     return {
       isCollapse,
       routerdata

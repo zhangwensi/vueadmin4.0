@@ -15,7 +15,7 @@ export default {
   name: "home",
   components: { LayoutNav, LayoutMain, LayoutHeader },
   setup(props, { root, refs }) {
-    const navStatus = computed(()=> root.$store.state.isCollapse)
+    const navStatus = computed(()=> root.$store.state.app.isCollapse)
     return {
       navStatus
     }

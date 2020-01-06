@@ -16,11 +16,13 @@
 </template>
 <script>
 import { ref, reactive } from '@vue/composition-api'
+import { mapState , mapMutations ,mapActions } from 'vuex' 
 export default {
   name: 'Header',
   setup(props, { root ,refs}){
     const changeNav = ()=> {
-      root.$store.commit('SET_COLLOSPE')
+      // root.$store.commit('SET_COLLOSPE')
+      root.$store.commit('app/SET_COLLOSPE') //使用Vuex的命名空间更安全
     }
 
     return {
