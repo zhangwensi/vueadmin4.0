@@ -1,2 +1,12 @@
 // 侧边栏宽度定义
 $MenuNav: 250px;
+$Header: 75px;
+$MinMenu: 64px;
+
+@mixin webkit($type ,$value) {
+    -webkit-#{$type}: $value;
+    -moz-#{$type}: $value;
+    -o-#{$type}: $value;
+    -ms-#{$type}: $value;
+    #{$type}: $value;
+}
