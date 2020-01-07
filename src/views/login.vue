@@ -16,7 +16,7 @@
         :model="ruleForm"
         status-icon
         :rules="rules"
-        ref="ruleForm"
+        ref="formName"
         class="login-form"
       >
         <el-form-item prop="email" class="item-form">
@@ -76,7 +76,7 @@
         <el-form-item>
           <el-button
             type="danger"
-            @click="submitForm('ruleForm')"
+            @click="submitForm('formName')"
             class="btn-login block"
             :disabled="btnDis"
             >{{ model === "login" ? "登录" : "注册" }}</el-button
@@ -89,7 +89,7 @@
 <script>
 import { GetSms, Register } from "@/api/login.js";
 import { Message } from "element-ui";
-import { reactive, ref } from "@vue/composition-api";
+import { reactive, ref, isRef, toRefs, onMounted } from "@vue/composition-api";
 import { validEmail, validPass } from "@/guide/check.js";
 import { mapState , mapMutations ,mapActions } from 'vuex';
 export default {
@@ -181,7 +181,7 @@ export default {
       data.current = true;
       model.value = data.type;
       // 重置表单内容(json的2种写法择一)
-      refs["ruleForm"].resetFields();
+      refs["formName"].resetFields();
       // refs.ruleForm.resetFields()
       // 点击注册/登录按钮时 如果定时器有则先停定时器 按钮恢复为获取验证码状态
       clearInterval(timer.value);
@@ -189,8 +189,8 @@ export default {
       buttonStatus.buttonContext = "获取验证码";
     };
     // 登录验证
-    const submitForm = ruleForm => {
-      refs["ruleForm"].validate(valid => {
+    const submitForm = (formName => {
+      refs[formName].validate(valid => {
         if (valid) {
           // 注册部分************************************
           // 后期需增加加密插件
@@ -199,14 +199,14 @@ export default {
               username: ruleForm.email,
               password: ruleForm.password,
               code: ruleForm.code
-            };
+            }
             Register(requestData)
               .then(response => {
                 let data = response.data;
                 root.$message({
                   message: data.message,
                   type: "success"
-                });
+                })
                 // 注册成功后自动跳转至登录状态
                 bkShow(navTab[0]);
               })
@@ -218,7 +218,7 @@ export default {
             let requestData = {
               username: ruleForm.email,
               password: ruleForm.password
-            };
+            }
             root.$store.dispatch('login/userLogin',requestData).then(response => {
                 const data = response.data;
                 root.$message({
@@ -228,22 +228,10 @@ export default {
                 console.log(data);
                 root.$router.push("/home");
               })
-              .then(err => {
+              .catch(err => {
+                console.log('报错了')
                 console.log(err);
               })
-            // Login(requestData)
-            //   .then(response => {
-            //     const data = response.data;
-            //     root.$message({
-            //       message: data.message,
-            //       type: "success"
-            //     });
-            //     console.log(data);
-            //     root.$router.push("/home");
-            //   })
-            //   .then(err => {
-            //     console.log(err);
-            //   });
           }
         } else {
           root.$message({
@@ -257,7 +245,7 @@ export default {
           return false;
         }
       });
-    };
+    });
     // 获取验证码
     const getSms = () => {
       let reg = /^[A-Za-z\d]+[A-Za-z\d\-_\.]*@([A-Za-z\d]+[A-Za-z\d\-]*\.)+[A-Za-z]{2,4}$/;
@@ -299,7 +287,7 @@ export default {
             timeDown(60);
             console.log(response);
           })
-          .then(err => {
+          .catch(err => {
             console.log(err);
           });
       }, 3000);

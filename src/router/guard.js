@@ -1,5 +1,6 @@
 import router from "./index.js";
-import { userTK } from "@/utils/app.js"
+import { userTK } from "@/utils/app.js";
+
 // 使用cookie中的存在的token
 // 定义路由白名单
 const whiteRoute = ['/login'];
@@ -8,6 +9,7 @@ const whiteRoute = ['/login'];
 router.beforeEach((to, from, next) => {
     // token存在
     if(userTK()){
+        next()
         // 路由的动态添加  为每个登录的角色分配不同的菜单
         console.log('存在')
     } else {
