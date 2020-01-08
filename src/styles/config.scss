@@ -10,3 +10,14 @@ $MinMenu: 64px;
     -ms-#{$type}: $value;
     #{$type}: $value;
 }
+@mixin labelDom($algin,$width,$line-height) {
+    label {
+        float: left;
+        line-height: $line-height + px;
+        width: $width + px;
+        text-align: $algin;
+      }
+    .wrap-content {
+        margin-left: $width + px;
+    }
+}
