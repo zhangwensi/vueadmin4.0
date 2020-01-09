@@ -1,6 +1,5 @@
 <template>
   <div>
-    <el-form :inline="true"  class="demo-form-inline">
       <el-row :gutter="16">
         <el-col :span=4>
           <div class="select-wrap category">
@@ -22,7 +21,7 @@
             <label for=""><span>日期:</span></label>
             <div class="wrap-content">
               <el-date-picker
-                v-model="value2"
+                v-model="dateValue"
                 type="datetimerange"
                 align="right"
                 start-placeholder="开始日期"
@@ -57,7 +56,37 @@
           <el-button type="danger pull-right">新增</el-button>
         </el-col>
       </el-row>
-    </el-form>
+      <!-- 表格 -->
+      <el-table :data="tableDate" border style="width:100%">
+        <el-table-column type="selection" width="45" style="padding-left:15px"></el-table-column>
+        <el-table-column prop="title" label="标题" width="552"></el-table-column>
+        <el-table-column prop="category" label="类型" width="110"></el-table-column>
+        <el-table-column prop="date" label="日期" width="200"></el-table-column>
+        <el-table-column prop="user" label="管理员" width="100"></el-table-column>
+        <el-table-column label="操作">
+          <template>
+            <el-button type="danger" size="mini">删除</el-button>
+            <el-button type="success" size="mini">增加</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--  分页-->
+      <el-row>
+        <el-col :span="8">
+          <el-button>批量处理</el-button>
+        </el-col>
+        <el-col :span="14">
+          <el-pagination
+            background
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="100"
+            layout="total, sizes, prev, pager, next,jumper"
+            :total="100">
+          </el-pagination>
+        </el-col>
+      </el-row>
+      <!-- 新增弹出框 -->
+      
   </div>
 </template>
 
@@ -79,18 +108,45 @@ export default {
       }]
     )
     const selectKey = ref('')
-    const value2 = ref('')
+    const dateValue = ref('')
     const keyWords = reactive([
       {value: "ID",label: "ID"},
       {value: "title",label: "标题"}
     ])
     const key_code = ref('ID')
+    const tableDate = reactive([
+      {
+        title: '上海市普陀区金沙江路 1516 弄',
+        category: '国内信息',
+        date: '2020-01-09 16:25:32',
+        user: '管理员'
+      },
+      {
+        title: "上海市普陀区金沙江路 1516 弄",
+        category: "国内信息",
+        date: '2020-01-09 16:25:32',
+        user: "管理员"
+      },
+      {
+        title: "上海市普陀区金沙江路 1516 弄",
+        category: "国内信息",
+        date: '2020-01-09 16:25:32',
+        user: "管理员"
+      },
+      {
+        title: "可以获取到 row, column, $index 和 store（table 内部的状态管理）",
+        category: "国内信息",
+        date: '2020-01-09 16:25:32',
+        user: "管理员"
+      }
+    ])
     return {
       options,
       selectKey,
-      value2,
+      dateValue,
       keyWords,
-      key_code
+      key_code,
+      tableDate
     }
   }
 };

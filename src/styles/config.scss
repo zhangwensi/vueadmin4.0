@@ -21,3 +21,19 @@ $MinMenu: 64px;
         margin-left: $width + px;
     }
 }
+
+// 表格样式重置
+div.el-table {
+    td, th {text-align: center;}
+    th {
+        font-weight: bold;
+        color: #344a5f;
+    }
+    td {
+        font-size: 14px;
+    }
+}
+.el-table__body, .el-table__footer, .el-table__header {
+    table-layout: fixed;
+    border-collapse: collapse;
+}

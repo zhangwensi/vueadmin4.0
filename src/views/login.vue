@@ -219,7 +219,7 @@ export default {
               username: ruleForm.email,
               password: ruleForm.password
             }
-            root.$store.dispatch('login/userLogin',requestData).then(response => {
+            root.$store.dispatch('app/userLogin',requestData).then(response => {
                 const data = response.data;
                 root.$message({
                   message: data.message,
