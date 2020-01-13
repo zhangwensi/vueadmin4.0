@@ -53,7 +53,7 @@
           <el-button type="primary">搜索</el-button>
         </el-col>
         <el-col :span="2">
-          <el-button type="danger pull-right">新增</el-button>
+          <el-button type="danger" class="pull-right" @click="dialogInfo = true">新增</el-button>
         </el-col>
       </el-row>
       <!-- 表格 -->
@@ -65,15 +65,15 @@
         <el-table-column prop="user" label="管理员" width="100"></el-table-column>
         <el-table-column label="操作">
           <template>
-            <el-button type="danger" size="mini">删除</el-button>
-            <el-button type="success" size="mini">增加</el-button>
+            <el-button type="danger" size="mini" @click="deletItem">删除</el-button>
+            <el-button type="success" size="mini" @click="dialogInfo = true">增加</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!--  分页-->
       <el-row>
         <el-col :span="8">
-          <el-button>批量处理</el-button>
+          <el-button @click="deletAll">批量删除</el-button>
         </el-col>
         <el-col :span="14">
           <el-pagination
@@ -86,15 +86,21 @@
         </el-col>
       </el-row>
       <!-- 新增弹出框 -->
-      
+      <!-- <Dialog :flag.sync="dialogInfo"/> -->
+      <Dialog :flag="dialogInfo"  @close="diaClose"/>
   </div>
 </template>
 
 <script>
 import {ref,reactive} from "@vue/composition-api"
 import "@/styles/config.scss"
+import Dialog  from "@/views/Console/Dialog/dialog.vue"
+import { global } from "@/utils/globalv3"
 export default {
+  components: { Dialog },
   setup(props, {refs , root}){
+    const { str,confirm } = global()
+    // watch(()=>{console.log(str.value)})
     const options = reactive(
       [{
         value: '1',
@@ -107,6 +113,7 @@ export default {
         label: '公司信息'
       }]
     )
+    const dialogInfo = ref(false)
     const selectKey = ref('')
     const dateValue = ref('')
     const keyWords = reactive([
@@ -140,13 +147,44 @@ export default {
         user: "管理员"
       }
     ])
+    const diaClose =()=>{
+      // 可以处理逻辑复杂的事情
+      dialogInfo.value = false
+    }
+
+    // 
+    const deletItem = ()=>{
+      confirm({
+        content: "删除此数据，删除后将无法恢复",
+        tip: "警告",
+        type: "warning",
+        fn: aaa
+      })
+    }
+    const deletAll = ()=> {
+      confirm({
+        content: "删除选择的数据，删除后将无法恢复",
+        tip: "",
+        type: "warning",
+        fn: aaa
+      })
+    }
+
+    const aaa = ()=>{
+      // 做删除动作
+      console.log("aaaa")
+    }
     return {
       options,
       selectKey,
       dateValue,
       keyWords,
       key_code,
-      tableDate
+      tableDate,
+      dialogInfo,
+      diaClose,
+      deletItem,
+      deletAll
     }
   }
 };
@@ -158,5 +196,8 @@ export default {
   &.category{@include labelDom(left,60,40)}
   &.data {@include labelDom(center,100,40)}
   &.keywords{@include labelDom(center,90,40)}
+}
+.el-table {
+  margin: 40px 0 40px 0;
 }
 </style>
