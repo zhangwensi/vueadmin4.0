@@ -72,16 +72,17 @@
       </el-table>
       <!--  分页-->
       <el-row>
-        <el-col :span="8">
+        <el-col :span="12">
           <el-button @click="deletAll">批量删除</el-button>
         </el-col>
-        <el-col :span="14">
+        <el-col :span="12">
           <el-pagination
             background
             :page-sizes="[10, 20, 30, 40]"
             :page-size="100"
             layout="total, sizes, prev, pager, next,jumper"
-            :total="100">
+            :total="100"
+            width="100%">
           </el-pagination>
         </el-col>
       </el-row>
