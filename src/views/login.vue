@@ -210,7 +210,7 @@ export default {
                 // 注册成功后自动跳转至登录状态
                 bkShow(navTab[0]);
               })
-              .then(err => {
+              .catch(err => {
                 console.log(err);
               });
           } else {

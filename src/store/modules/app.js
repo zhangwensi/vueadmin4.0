@@ -2,7 +2,7 @@ import { Login } from "@/api/login.js";
 import { setTK,userName,getName } from "@/utils/app.js";
 
 const state = {
-    isCollapse: JSON.parse(sessionStorage.getItem('isCollapse'))||false,
+    isCollapse: JSON.parse(sessionStorage.getItem('isCollapse'))||false,  // 此处有bug  顺序需要调换一下
     username: getName() || '我是王者',
     to_ken: ''
 }

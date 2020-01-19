@@ -3,6 +3,7 @@
  */
 import axios from "axios";
 import { Message } from "element-ui";
+import {userTK,getName} from "@/utils/app.js";
 //配置跨域 配置环境变量 区分生产环境与开发环境差异
 const BASEURL = process.env.NODE_ENV === "production" ? "" : "/api";
 const service = axios.create({
@@ -17,6 +18,9 @@ const service = axios.create({
 service.interceptors.request.use(
   function(config) {
     // 请求之前做的事情
+    // 可配置token等信息 
+    // config.headers['token'] = userTK()     后台暂不对cookie信息进行处理，如不注释此语句  接口请求不成功也不会失败
+    // consfig.headers['userName'] = getName()
     return config;
   },
   function(error) {

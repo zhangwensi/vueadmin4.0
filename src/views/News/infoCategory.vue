@@ -1,16 +1,16 @@
 <template>
   <div id="category">
-    <el-button type="danger">添加一级分类</el-button>
+    <el-button type="danger" @click="addFirst">添加一级分类</el-button>
     <!-- <div class="hr"></div> -->
     <hr class="hr-e9">
     <div>
       <el-row :gutter="16">
         <el-col :span="12">
           <div  class="category-wrap">
-            <div class="category">
+            <div class="category" v-for="item in categoryDate.item" :key="item.id">
               <h4>
                 <svg-icon icon-class="plus" class="svg"></svg-icon>
-                新闻
+                {{item.category_name}}
                 <div class="button-group">
                   <el-button type="danger" size="mini" round>编辑</el-button>
                   <el-button type="success" size="mini" round>增加子级</el-button>
@@ -18,31 +18,13 @@
                 </div>
               </h4>
               <ul>
-                <li>国内
+                <li v-for="childItem in item.children" :key="childItem.id">
+                  {{childItem.category_name}}
                   <div class="button-group">
                     <el-button type="danger" size="mini" round>编辑</el-button>
                     <el-button size="mini" round>取消</el-button>
                   </div>
                 </li>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
-              </ul>
-            </div>
-            <div class="category">
-              <h4>
-                <svg-icon icon-class="minus" class="svg"></svg-icon>
-                新闻
-              </h4>
-              <ul>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
-                <li>国内</li>
               </ul>
             </div>
           </div>
@@ -51,14 +33,14 @@
           <div class="menuewrap">
             <h4>一级分类编辑</h4>
             <el-form label-width="142px" class="widt1">
-              <el-form-item label="一级分类名称">
+              <el-form-item label="一级分类名称" v-if="status.categoryFirstInput">
                 <el-input v-model="formLabelAlign.name"></el-input>
               </el-form-item>
-              <el-form-item label="二级分类名称">
+              <el-form-item label="二级分类名称" v-if="status.categorySecondInput">
                 <el-input v-model="formLabelAlign.region"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="danger">确认</el-button>
+                <el-button type="danger" @click="submit">确认</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -69,16 +51,76 @@
 </template>
 
 <script>
+import { AddFirstCategory } from "@/api/news.js";
 import { reactive } from '@vue/composition-api';
 export default {
+  name: 'infoCategory',
   setup(props,{ref,root}){
     const formLabelAlign = reactive({
         name: '',
         region: '',
         type: ''
     })
+    const categoryDate = reactive({
+      item:[
+        {
+          id: 12,
+          category_name: "国际信息",
+          children: [
+            {
+              id: 1,
+              category_name: "哈哈"
+            },
+            {
+              id: 2,
+              category_name: "嘻嘻"
+            }
+          ]
+        },
+        {
+          id: 13,
+          category_name: "国内信息",
+          children: [{
+            id: 2,
+            category_name: "吼吼"
+          }]
+        }
+      ]
+    })
+    const submit = ()=>{
+      if(!formLabelAlign.name) {
+        root.$message.error("输入不为空")
+      }
+      return false
+      let categoryInfo = {categoryName: formLabelAlign.name}
+      AddFirstCategory(categoryInfo).then(response =>{
+        console.log(response)
+        let data = response.data
+        if(data.resCode !==0) {
+          root.$message({
+            message: "添加失败",
+            type: "warning"
+          })
+        }else {
+          root.$message({
+            message: data.message,
+            type: "success"
+          })
+        }
+      }).catch(error =>{
+
+      })
+    }
+    const status = reactive({
+        categoryFirstInput: true,
+        categorySecondInput: true
+    })
+    const addFirst = ()=>{
+        status.categorySecondInput = false
+    }
     return {
-      formLabelAlign
+      formLabelAlign,status,categoryDate,
+      submit,addFirst
     }
   }
 }
