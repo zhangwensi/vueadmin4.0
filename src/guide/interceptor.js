@@ -19,8 +19,8 @@ service.interceptors.request.use(
   function(config) {
     // 请求之前做的事情
     // 可配置token等信息 
-    // config.headers['token'] = userTK()     后台暂不对cookie信息进行处理，如不注释此语句  接口请求不成功也不会失败
-    // consfig.headers['userName'] = getName()
+    config.headers['token'] = userTK()     //后台暂不对cookie信息进行处理
+    config.headers['userName'] = getName()
     return config;
   },
   function(error) {

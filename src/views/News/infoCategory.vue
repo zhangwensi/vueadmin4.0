@@ -90,8 +90,8 @@ export default {
     const submit = ()=>{
       if(!formLabelAlign.name) {
         root.$message.error("输入不为空")
+        return false
       }
-      return false
       let categoryInfo = {categoryName: formLabelAlign.name}
       AddFirstCategory(categoryInfo).then(response =>{
         console.log(response)
