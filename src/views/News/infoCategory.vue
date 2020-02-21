@@ -51,8 +51,8 @@
 </template>
 
 <script>
-import { AddFirstCategory } from "@/api/news.js";
-import { reactive } from '@vue/composition-api';
+import { AddFirstCategory, GetFirstCategory } from "@/api/news.js";
+import { reactive, onMounted } from '@vue/composition-api';
 export default {
   name: 'infoCategory',
   setup(props,{ref,root}){
@@ -63,28 +63,29 @@ export default {
     })
     const categoryDate = reactive({
       item:[
-        {
-          id: 12,
-          category_name: "国际信息",
-          children: [
-            {
-              id: 1,
-              category_name: "哈哈"
-            },
-            {
-              id: 2,
-              category_name: "嘻嘻"
-            }
-          ]
-        },
-        {
-          id: 13,
-          category_name: "国内信息",
-          children: [{
-            id: 2,
-            category_name: "吼吼"
-          }]
-        }
+        // 先置为空
+        // {
+        //   id: 12,
+        //   category_name: "国际信息",
+        //   children: [
+        //     {
+        //       id: 1,
+        //       category_name: "哈哈"
+        //     },
+        //     {
+        //       id: 2,
+        //       category_name: "嘻嘻"
+        //     }
+        //   ]
+        // },
+        // {
+        //   id: 13,
+        //   category_name: "国内信息",
+        //   children: [{
+        //     id: 2,
+        //     category_name: "吼吼"
+        //   }]
+        // }
       ]
     })
     const submit = ()=>{
@@ -94,7 +95,7 @@ export default {
       }
       let categoryInfo = {categoryName: formLabelAlign.name}
       AddFirstCategory(categoryInfo).then(response =>{
-        console.log(response)
+        console.log(response.data)
         let data = response.data
         if(data.resCode !==0) {
           root.$message({
@@ -106,9 +107,14 @@ export default {
             message: data.message,
             type: "success"
           })
+          // 将取得数据push进categoryDate数组中
+          categoryDate.item.push(data.data)
         }
       }).catch(error =>{
-
+          root.$message({
+            message: "请求失败",
+            type: "warning"
+          })
       })
     }
     const status = reactive({
@@ -118,9 +124,21 @@ export default {
     const addFirst = ()=>{
         status.categorySecondInput = false
     }
+    const getFirst = ()=>{
+      GetFirstCategory().then((respnse)=>{
+        console.log(respnse.data.data.data)
+        categoryDate.item = respnse.data.data.data
+      }).catch((error)=>{
+        // 报错时处理啥
+      })
+    }
+    // 页面（DOM渲染完成时获取数据）
+    onMounted(()=>{
+      getFirst()
+    })
     return {
       formLabelAlign,status,categoryDate,
-      submit,addFirst
+      submit,addFirst,getFirst
     }
   }
 }
@@ -166,7 +184,7 @@ export default {
   li {
     position: relative;
     padding-left: 38px;
-    margin-left: 22px;
+    margin-left: 23px;
     &:before {
       position: absolute;
       top: 20px;
