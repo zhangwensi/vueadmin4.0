@@ -19,3 +19,14 @@ export function GetFirstCategory(data) {
         data
     })
 }
+/*
+*删除一级分类
+*/
+
+export function DeletFirstCategory(data) {
+    return service.request({
+        method: "post",
+        baseURL: '/api/news/DeletFirstCategory',
+        data
+    })
+}

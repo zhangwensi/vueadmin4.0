@@ -14,7 +14,7 @@
                 <div class="button-group">
                   <el-button type="danger" size="mini" round>编辑</el-button>
                   <el-button type="success" size="mini" round>增加子级</el-button>
-                  <el-button size="mini" round>取消</el-button>
+                  <el-button size="mini" round>删除</el-button>
                 </div>
               </h4>
               <ul>
@@ -22,7 +22,7 @@
                   {{childItem.category_name}}
                   <div class="button-group">
                     <el-button type="danger" size="mini" round>编辑</el-button>
-                    <el-button size="mini" round>取消</el-button>
+                    <el-button size="mini" round>删除</el-button>
                   </div>
                 </li>
               </ul>
@@ -34,13 +34,13 @@
             <h4>一级分类编辑</h4>
             <el-form label-width="142px" class="widt1">
               <el-form-item label="一级分类名称" v-if="status.categoryFirstInput">
-                <el-input v-model="formLabelAlign.name"></el-input>
+                <el-input v-model="formLabelAlign.name" :disabled="status_first_disabled"></el-input>
               </el-form-item>
               <el-form-item label="二级分类名称" v-if="status.categorySecondInput">
-                <el-input v-model="formLabelAlign.region"></el-input>
+                <el-input v-model="formLabelAlign.region" :disabled="status_second_disabled"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="danger" @click="submit">确认</el-button>
+                <el-button type="danger" @click="submit" :disabled="status_sumbit_disable">确认</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -52,15 +52,18 @@
 
 <script>
 import { AddFirstCategory, GetFirstCategory } from "@/api/news.js";
-import { reactive, onMounted } from '@vue/composition-api';
+import { reactive, onMounted , ref } from '@vue/composition-api';
 export default {
   name: 'infoCategory',
-  setup(props,{ref,root}){
+  setup(props,{refs,root}){
     const formLabelAlign = reactive({
         name: '',
         region: '',
         type: ''
     })
+    const status_first_disabled = ref(true)
+    const status_second_disabled = ref(true)
+    const status_sumbit_disable = ref(true)
     const categoryDate = reactive({
       item:[
         // 先置为空
@@ -109,6 +112,7 @@ export default {
           })
           // 将取得数据push进categoryDate数组中
           categoryDate.item.push(data.data)
+          formLabelAlign.name = ''
         }
       }).catch(error =>{
           root.$message({
@@ -123,6 +127,8 @@ export default {
     })
     const addFirst = ()=>{
         status.categorySecondInput = false
+        status_first_disabled.value = false
+        status_sumbit_disable.value = false
     }
     const getFirst = ()=>{
       GetFirstCategory().then((respnse)=>{
@@ -137,7 +143,7 @@ export default {
       getFirst()
     })
     return {
-      formLabelAlign,status,categoryDate,
+      formLabelAlign,status,categoryDate,status_first_disabled,status_second_disabled,status_sumbit_disable,
       submit,addFirst,getFirst
     }
   }
