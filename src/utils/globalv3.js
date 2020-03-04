@@ -9,8 +9,10 @@ export function global(){
             center: true,
             type: params.type
         }).then(()=>{
-            params.fn && params.fn()
+            str.value = params.id || ''
+            params.fn && params.fn(params.id || '')
         }).catch(()=>{
+            params.catchFn && params.catchFn(params.id || '')
             // root.message({
             //     type: "info",
             //     message: "已取消删除"

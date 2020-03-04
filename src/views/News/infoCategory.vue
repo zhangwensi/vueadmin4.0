@@ -12,9 +12,9 @@
                 <svg-icon icon-class="plus" class="svg"></svg-icon>
                 {{item.category_name}}
                 <div class="button-group">
-                  <el-button type="danger" size="mini" round>编辑</el-button>
+                  <el-button type="danger" size="mini" @click="editCategory()" round>编辑</el-button>
                   <el-button type="success" size="mini" round>增加子级</el-button>
-                  <el-button size="mini" round>删除</el-button>
+                  <el-button size="mini" @click="removeFirstCategory(item.id)" round>删除</el-button>
                 </div>
               </h4>
               <ul>
@@ -51,11 +51,13 @@
 </template>
 
 <script>
-import { AddFirstCategory, GetFirstCategory } from "@/api/news.js";
+import { AddFirstCategory, GetFirstCategory, DeletFirstCategory } from "@/api/news.js";
 import { reactive, onMounted , ref } from '@vue/composition-api';
+import { global } from "@/utils/globalv3";
 export default {
   name: 'infoCategory',
   setup(props,{refs,root}){
+    const {str,confirm} = global()
     const formLabelAlign = reactive({
         name: '',
         region: '',
@@ -64,6 +66,7 @@ export default {
     const status_first_disabled = ref(true)
     const status_second_disabled = ref(true)
     const status_sumbit_disable = ref(true)
+    const deleteId = ref('')
     const categoryDate = reactive({
       item:[
         // 先置为空
@@ -142,9 +145,41 @@ export default {
     onMounted(()=>{
       getFirst()
     })
+    // 删除一级菜单
+    const removeFirstCategory = (categoryId)=>{
+      deleteId.value =  categoryId
+      confirm({
+        content: "删除选择的数据，删除后将无法恢复",
+        tip:"警告",
+        type: "warning",
+        fn: deleteFirtsC, //调用删除接口 进行数据删除
+        catchFn:()=>{
+          deleteId.value = ''
+        }
+      })
+    }
+    // 删除一级菜单
+    const deleteFirtsC = ()=>{
+      // 如需要传参  建议传deleteId.value给后端接口 本版本暂不需要传值
+      DeletFirstCategory().then(response=>{
+        // 删除成功后移除一级菜单内容 可以使用splice或者filter
+        let index = categoryDate.item.findIndex(item => item.id == deleteId.value)
+        categoryDate.item.splice(index,1)
+        // let newData = categoryDate.item.filter(item => item.id != deleteId.value)
+        // categoryDate.item = newData
+      }).catch(error=>{
+
+      })
+    }
+    // 编辑一级菜单内容
+    const editCategory = ()=>{
+      // 隐藏自己菜单 让一级菜单进行可编辑状态
+      status.categorySecondInput = false
+      status_first_disabled.value = false
+    }
     return {
-      formLabelAlign,status,categoryDate,status_first_disabled,status_second_disabled,status_sumbit_disable,
-      submit,addFirst,getFirst
+      formLabelAlign,status,categoryDate,status_first_disabled,status_second_disabled,status_sumbit_disable,deleteId,
+      submit,addFirst,getFirst,removeFirstCategory,deleteFirtsC,editCategory
     }
   }
 }
