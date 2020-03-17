@@ -1,6 +1,6 @@
 <template>
   <div id="category">
-    <el-button type="danger" @click="addFirst">添加一级分类</el-button>
+    <el-button type="danger" @click="addFirst({type:'subit_button_add'})">添加一级分类</el-button>
     <!-- <div class="hr"></div> -->
     <hr class="hr-e9">
     <div>
@@ -12,7 +12,7 @@
                 <svg-icon icon-class="plus" class="svg"></svg-icon>
                 {{item.category_name}}
                 <div class="button-group">
-                  <el-button type="danger" size="mini" @click="editCategory()" round>编辑</el-button>
+                  <el-button type="danger" size="mini" @click="editCategory({data:item,type:'subit_button_edit'})" round>编辑</el-button>
                   <el-button type="success" size="mini" round>增加子级</el-button>
                   <el-button size="mini" @click="removeFirstCategory(item.id)" round>删除</el-button>
                 </div>
@@ -51,13 +51,15 @@
 </template>
 
 <script>
-import { AddFirstCategory, GetFirstCategory, DeletFirstCategory } from "@/api/news.js";
-import { reactive, onMounted , ref } from '@vue/composition-api';
+import { AddFirstCategory, GetFirstCategory, DeletFirstCategory ,EditFirstCategory} from "@/api/news.js";
+import { reactive, onMounted , ref, watch } from '@vue/composition-api';
 import { global } from "@/utils/globalv3";
+import {common} from "@/api/common.js"
 export default {
   name: 'infoCategory',
   setup(props,{refs,root}){
     const {str,confirm} = global()
+    const {getCategoryInfo , cateGoryInfo} = common()
     const formLabelAlign = reactive({
         name: '',
         region: '',
@@ -66,42 +68,27 @@ export default {
     const status_first_disabled = ref(true)
     const status_second_disabled = ref(true)
     const status_sumbit_disable = ref(true)
+    const subit_botton_type = ref('') //确定按钮的类型值
     const deleteId = ref('')
     const categoryDate = reactive({
-      item:[
-        // 先置为空
-        // {
-        //   id: 12,
-        //   category_name: "国际信息",
-        //   children: [
-        //     {
-        //       id: 1,
-        //       category_name: "哈哈"
-        //     },
-        //     {
-        //       id: 2,
-        //       category_name: "嘻嘻"
-        //     }
-        //   ]
-        // },
-        // {
-        //   id: 13,
-        //   category_name: "国内信息",
-        //   children: [{
-        //     id: 2,
-        //     category_name: "吼吼"
-        //   }]
-        // }
-      ]
+      item:[],
+      current: []
     })
     const submit = ()=>{
+      if( subit_botton_type.value == 'subit_button_add') {
+        addFirstMenu()
+      }
+      if(subit_botton_type.value == 'subit_button_edit') {
+        editFirstCategory()
+      }
+    }
+    const addFirstMenu = ()=>{
       if(!formLabelAlign.name) {
         root.$message.error("输入不为空")
         return false
       }
       let categoryInfo = {categoryName: formLabelAlign.name}
       AddFirstCategory(categoryInfo).then(response =>{
-        console.log(response.data)
         let data = response.data
         if(data.resCode !==0) {
           root.$message({
@@ -128,19 +115,25 @@ export default {
         categoryFirstInput: true,
         categorySecondInput: true
     })
-    const addFirst = ()=>{
+    const addFirst = (parame)=>{
+        subit_botton_type.value = parame.type
         status.categorySecondInput = false
         status_first_disabled.value = false
         status_sumbit_disable.value = false
     }
     const getFirst = ()=>{
-      GetFirstCategory().then((respnse)=>{
-        console.log(respnse.data.data.data)
-        categoryDate.item = respnse.data.data.data
-      }).catch((error)=>{
-        // 报错时处理啥
-      })
+      // GetFirstCategory().then((respnse)=>{
+      //   console.log(respnse.data.data.data)
+      //   categoryDate.item = respnse.data.data.data
+      // }).catch((error)=>{
+      //   // 报错时处理啥
+      // })
+      getCategoryInfo()
     }
+    // 监听一级分类接口返回值
+    watch(()=>cateGoryInfo.item,(value)=>{
+      categoryDate.item = value
+    })
     // 页面（DOM渲染完成时获取数据）
     onMounted(()=>{
       getFirst()
@@ -172,14 +165,58 @@ export default {
       })
     }
     // 编辑一级菜单内容
-    const editCategory = ()=>{
+    const editCategory = (parame)=>{
       // 隐藏自己菜单 让一级菜单进行可编辑状态
+      subit_botton_type.value = parame.type
       status.categorySecondInput = false
       status_first_disabled.value = false
+      status_sumbit_disable.value = false
+      formLabelAlign.name = parame.data.category_name
+      //存储当前数据
+      categoryDate.current = parame.data
+    }
+    const editFirstCategory = ()=>{
+      if(categoryDate.current.length == 0){
+        root.$message({
+          message:"修改值不能为空！",
+          type: 'error'
+        })
+        return false
+      }
+      let reqData = {
+        id:categoryDate.current.id,
+        category_name:formLabelAlign.name
+      }
+      EditFirstCategory(reqData).then(response=>{
+        let resData = response.data
+        if(resData.resCode !==0) {
+          root.$message({
+            message: "添加失败",
+            type: "warning"
+          })
+        }else {
+          root.$message({
+            message:resData.message,
+            type: "success"
+          })
+        }
+        // 取current数据 使用filter方法找出数组id与当前id一致的  修改内容
+        //let data = categoryDate.item.filter(item=>item.id == categoryDate.current.id) //对象引用  
+        //data[0].category_name = resData.data.category_name//因后台未做数据库链 所以直接使用填入的值
+        categoryDate.current.category_name = resData.data.category_name
+        // 清空输入框
+        formLabelAlign.name = ''
+        categoryDate.current = []
+      }).catch(error=>{
+          root.$message({
+            message: "请求失败",
+            type: "warning"
+          })
+      })
     }
     return {
-      formLabelAlign,status,categoryDate,status_first_disabled,status_second_disabled,status_sumbit_disable,deleteId,
-      submit,addFirst,getFirst,removeFirstCategory,deleteFirtsC,editCategory
+      formLabelAlign,status,categoryDate,status_first_disabled,status_second_disabled,status_sumbit_disable,deleteId,subit_botton_type,
+      submit,addFirst,getFirst,removeFirstCategory,deleteFirtsC,editCategory,addFirstMenu,editFirstCategory
     }
   }
 }

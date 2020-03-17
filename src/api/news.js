@@ -30,3 +30,36 @@ export function DeletFirstCategory(data) {
         data
     })
 }
+
+/*
+ * 编辑一级分类
+ */ 
+
+export function EditFirstCategory(data) {
+    return service.request({
+        method: "post",
+        baseURL: "api/news/EditFirstCategory",
+        data
+    })
+}
+
+/**
+ * 添加信息
+ *
+ */
+export function Addnews(data) {
+    return service.request({
+        method:"post",
+        baseURL:"api/news/Addnews",
+        data
+    })
+}
+
+// 获取信息列表
+export function GetList(data) {
+    return service.request({
+        method:"post",
+        baseURL: 'api/getList',
+        data
+    })
+}

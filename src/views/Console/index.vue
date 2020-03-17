@@ -3,14 +3,14 @@
       <el-row :gutter="16">
         <el-col :span=4>
           <div class="select-wrap category">
-            <label for="">类型:</label>
+            <label for="">分类:</label>
             <div class="wrap-content">
               <el-select v-model="selectKey" placeholder="请选择" style="width:100%;">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in options.category"
+                  :key="item.id"
+                  :label="item.category_name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
@@ -53,11 +53,11 @@
           <el-button type="primary">搜索</el-button>
         </el-col>
         <el-col :span="2">
-          <el-button type="danger" class="pull-right" @click="dialogInfo = true">新增</el-button>
+          <el-button type="danger" class="pull-right" @click="dialogInfo = true" >新增</el-button>
         </el-col>
       </el-row>
       <!-- 表格 -->
-      <el-table :data="tableDate" border style="width:100%">
+      <el-table :data="tableDate.item[0]" v-loading="loadingData" border style="width:100%">
         <el-table-column type="selection" width="45" style="padding-left:15px"></el-table-column>
         <el-table-column prop="title" label="标题" width="552"></el-table-column>
         <el-table-column prop="category" label="类型" width="110"></el-table-column>
@@ -78,81 +78,76 @@
         <el-col :span="12">
           <el-pagination
             background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
             :page-sizes="[10, 20, 30, 40]"
-            :page-size="100"
+            :page-size="page.pageSize"
             layout="total, sizes, prev, pager, next,jumper"
-            :total="100"
+            :total="total"
             width="100%">
           </el-pagination>
         </el-col>
       </el-row>
       <!-- 新增弹出框 -->
       <!-- <Dialog :flag.sync="dialogInfo"/> -->
-      <Dialog :flag="dialogInfo"  @close="diaClose"/>
+      <Dialog :flag="dialogInfo"  @close="diaClose" :category="options.category"/>
   </div>
 </template>
 
 <script>
-import {ref,reactive} from "@vue/composition-api"
+import {ref,reactive, onMounted, watch} from "@vue/composition-api"
 import "@/styles/config.scss"
 import Dialog  from "@/views/Console/Dialog/dialog.vue"
 import { global } from "@/utils/globalv3"
+import { common } from "@/api/common.js"
+import { GetList } from "@/api/news.js"
 export default {
   components: { Dialog },
   setup(props, {refs , root}){
     const { str,confirm } = global()
+    const { getCategoryInfo,cateGoryInfo } = common()
     // watch(()=>{console.log(str.value)})
-    const options = reactive(
-      [{
-        value: '1',
-        label: '国际信息'
-      }, {
-        value: '2',
-        label: '国内信息'
-      }, {
-        value: '3',
-        label: '公司信息'
-      }]
-    )
+    const options = reactive({
+      // [{
+      //   value: '1',
+      //   label: '国际信息'
+      // }, {
+      //   value: '2',
+      //   label: '国内信息'
+      // }, {
+      //   value: '3',
+      //   label: '公司信息'
+      // }]
+      category: []
+    })
     const dialogInfo = ref(false)
     const selectKey = ref('')
     const dateValue = ref('')
+    const loadingData = ref(false)
     const keyWords = reactive([
       {value: "ID",label: "ID"},
       {value: "title",label: "标题"}
     ])
     const key_code = ref('ID')
-    const tableDate = reactive([
-      {
-        title: '上海市普陀区金沙江路 1516 弄',
-        category: '国内信息',
-        date: '2020-01-09 16:25:32',
-        user: '管理员'
-      },
-      {
-        title: "上海市普陀区金沙江路 1516 弄",
-        category: "国内信息",
-        date: '2020-01-09 16:25:32',
-        user: "管理员"
-      },
-      {
-        title: "上海市普陀区金沙江路 1516 弄",
-        category: "国内信息",
-        date: '2020-01-09 16:25:32',
-        user: "管理员"
-      },
-      {
-        title: "可以获取到 row, column, $index 和 store（table 内部的状态管理）",
-        category: "国内信息",
-        date: '2020-01-09 16:25:32',
-        user: "管理员"
-      }
-    ])
+    const tableDate = reactive({
+      item:[]
+    })
+    const total = ref(0)
+    const page = reactive({
+      pageNumber:1,
+      pageSize:10
+    })
     const diaClose =()=>{
       // 可以处理逻辑复杂的事情
       dialogInfo.value = false
     }
-
+    const handleSizeChange =(val)=>{
+        page.pageSize = val
+    }
+    const handleCurrentChange =(val)=>{
+        page.pageNumber = val
+        getList()
+    }
     // 
     const deletItem = ()=>{
       confirm({
@@ -170,13 +165,45 @@ export default {
         fn: aaa
       })
     }
-
     const aaa = ()=>{
       // 做删除动作
       console.log("aaaa")
     }
+
+    // 页面加载完成时获取数据
+    onMounted(()=>{
+      getCategoryInfo()
+      getList()
+    })
+
+    // 监听初始值  监听的为categoryInfo对象，监听的值为value
+    watch(()=>cateGoryInfo.item,(value)=>{
+      options.category = value
+    })
+
+    // 获取列表信息
+    const getList = ()=>{
+      let reqListData = {
+        categoryId: '',
+        startTiem: '',
+        endTime: '',
+        title: '',
+        id: '',
+        pageNumber: page.pageNumber,
+        pageSize: page.pageSize
+      }
+      loadingData.value = true
+      GetList(reqListData).then(response=>{
+        let resData = response.data
+        tableDate.item = resData.data.data
+        total.value = resData.total
+        loadingData.value = false
+      }).catch(error=>{
+        loadingData.value = false
+      })
+    }
     return {
-      options,
+      options,page,total,loadingData,
       selectKey,
       dateValue,
       keyWords,
@@ -185,7 +212,8 @@ export default {
       dialogInfo,
       diaClose,
       deletItem,
-      deletAll
+      deletAll,
+      getList,handleSizeChange,handleCurrentChange
     }
   }
 };
