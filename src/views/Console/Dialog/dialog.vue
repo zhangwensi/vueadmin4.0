@@ -84,6 +84,7 @@ export default {
                             message: "添加成功",
                             type: "success"
                         })
+                        dialogTableVisible.value = false
                     }else {
                         root.$message({
                             message: "添加失败",

@@ -63,3 +63,11 @@ export function GetList(data) {
         data
     })
 }
+// 删除列表信息
+export function DeletList(data) {
+    return service.request({
+        method:"post",
+        baseURL:"api/deletList",
+        data
+    })
+}

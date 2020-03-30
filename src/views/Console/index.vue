@@ -57,15 +57,15 @@
         </el-col>
       </el-row>
       <!-- 表格 -->
-      <el-table :data="tableDate.item[0]" v-loading="loadingData" border style="width:100%">
+      <el-table :data="tableDate.item" v-loading="loadingData" border style="width:100%">
         <el-table-column type="selection" width="45" style="padding-left:15px"></el-table-column>
         <el-table-column prop="title" label="标题" width="552"></el-table-column>
-        <el-table-column prop="category" label="类型" width="110"></el-table-column>
-        <el-table-column prop="date" label="日期" width="200"></el-table-column>
+        <el-table-column prop="category" label="类型" width="110" :formatter="toType"></el-table-column>
+        <el-table-column prop="date" label="日期" width="200" :formatter="toTime"></el-table-column>
         <el-table-column prop="user" label="管理员" width="100"></el-table-column>
         <el-table-column label="操作">
-          <template>
-            <el-button type="danger" size="mini" @click="deletItem">删除</el-button>
+          <template slot-scope="scope">
+            <el-button type="danger" size="mini" @click="deletItem(scope.row.categoryId)">删除</el-button>
             <el-button type="success" size="mini" @click="dialogInfo = true">增加</el-button>
           </template>
         </el-table-column>
@@ -100,7 +100,7 @@ import "@/styles/config.scss"
 import Dialog  from "@/views/Console/Dialog/dialog.vue"
 import { global } from "@/utils/globalv3"
 import { common } from "@/api/common.js"
-import { GetList } from "@/api/news.js"
+import { GetList,DeletList } from "@/api/news.js"
 export default {
   components: { Dialog },
   setup(props, {refs , root}){
@@ -129,6 +129,7 @@ export default {
       {value: "title",label: "标题"}
     ])
     const key_code = ref('ID')
+    const deleteListId = ref('')
     const tableDate = reactive({
       item:[]
     })
@@ -137,6 +138,16 @@ export default {
       pageNumber:1,
       pageSize:10
     })
+    const toType =(row)=>{
+      let a = row.category 
+      return a
+    }
+    const toTime = (row)=>{
+      // 处理格林威志时间
+      let time = new Date(row.date)
+      let reltime = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds()
+      return reltime
+    }
     const diaClose =()=>{
       // 可以处理逻辑复杂的事情
       dialogInfo.value = false
@@ -149,12 +160,14 @@ export default {
         getList()
     }
     // 
-    const deletItem = ()=>{
+    const deletItem = (id)=>{
+      // 取table实例的id
+      deleteListId.value = id
       confirm({
         content: "删除此数据，删除后将无法恢复",
         tip: "警告",
         type: "warning",
-        fn: aaa
+        fn: delList
       })
     }
     const deletAll = ()=> {
@@ -165,9 +178,24 @@ export default {
         fn: aaa
       })
     }
-    const aaa = ()=>{
+    const delList = (data)=>{
       // 做删除动作
-      console.log("aaaa")
+      DeletList({id:deleteListId.value}).then(response=>{
+        let resData = response.data
+        if (resData.resCode == 0) {
+          // console.log(deleteListId.value)
+          // let newData = tableDate.item.filter(item => item.id != resData.data.id)
+          // console.log(newData)
+          // return false
+          // tableDate.item.splice(index,1)
+          getList()
+        }
+      }).catch(error=>{
+        root.$message({
+            message:"删除失败",
+            type:"danger"
+          })
+      })
     }
 
     // 页面加载完成时获取数据
@@ -195,15 +223,15 @@ export default {
       loadingData.value = true
       GetList(reqListData).then(response=>{
         let resData = response.data
-        tableDate.item = resData.data.data
-        total.value = resData.total
+        tableDate.item = resData.data
+        total.value = resData.total[0].cnt
         loadingData.value = false
       }).catch(error=>{
         loadingData.value = false
       })
     }
     return {
-      options,page,total,loadingData,
+      options,page,total,loadingData,deleteListId,
       selectKey,
       dateValue,
       keyWords,
@@ -212,8 +240,8 @@ export default {
       dialogInfo,
       diaClose,
       deletItem,
-      deletAll,
-      getList,handleSizeChange,handleCurrentChange
+      deletAll,delList,
+      getList,handleSizeChange,handleCurrentChange,toType,toTime
     }
   }
 };
