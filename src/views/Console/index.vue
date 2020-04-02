@@ -66,7 +66,7 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="danger" size="mini" @click="deletItem(scope.row.categoryId)">删除</el-button>
-            <el-button type="success" size="mini" @click="dialogInfo = true">增加</el-button>
+            <el-button type="success" size="mini" @click="editCategory(scope.row)" >编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -90,7 +90,9 @@
       </el-row>
       <!-- 新增弹出框 -->
       <!-- <Dialog :flag.sync="dialogInfo"/> -->
-      <Dialog :flag="dialogInfo"  @close="diaClose" :category="options.category"/>
+      <Dialog :flag="dialogInfo"  @close="diaClose" :category="options.category" @addGetList ="addGetList"/>
+      <!-- 编辑弹出框 -->
+      <editDialog :flag="editDialogInfo"  @close="diaClose" :editCategory="options.editCategory" :editCategoryType="options.category" @addGetList ="addGetList"/>
   </div>
 </template>
 
@@ -98,11 +100,12 @@
 import {ref,reactive, onMounted, watch} from "@vue/composition-api"
 import "@/styles/config.scss"
 import Dialog  from "@/views/Console/Dialog/dialog.vue"
+import editDialog from "@/views/Console/Dialog/editDialog.vue"
 import { global } from "@/utils/globalv3"
 import { common } from "@/api/common.js"
 import { GetList,DeletList } from "@/api/news.js"
 export default {
-  components: { Dialog },
+  components: { Dialog ,editDialog},
   setup(props, {refs , root}){
     const { str,confirm } = global()
     const { getCategoryInfo,cateGoryInfo } = common()
@@ -118,9 +121,11 @@ export default {
       //   value: '3',
       //   label: '公司信息'
       // }]
-      category: []
+      category: [],
+      editCategory:[]
     })
     const dialogInfo = ref(false)
+    const editDialogInfo =ref(false)
     const selectKey = ref('')
     const dateValue = ref('')
     const loadingData = ref(false)
@@ -144,13 +149,15 @@ export default {
     }
     const toTime = (row)=>{
       // 处理格林威志时间
+      const add0 =(m)=>{ return m<10 ? '0'+m:m}
       let time = new Date(row.date)
-      let reltime = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds()
+      let reltime =time.getFullYear() + '-' + add0((time.getMonth() + 1)) + '-' + add0(time.getDate()) + ' ' + add0(time.getHours()) + ':' + add0(time.getMinutes()) + ':' + add0(time.getSeconds())
       return reltime
     }
     const diaClose =()=>{
       // 可以处理逻辑复杂的事情
       dialogInfo.value = false
+      editDialogInfo.value = false
     }
     const handleSizeChange =(val)=>{
         page.pageSize = val
@@ -159,7 +166,7 @@ export default {
         page.pageNumber = val
         getList()
     }
-    // 
+    // 删除
     const deletItem = (id)=>{
       // 取table实例的id
       deleteListId.value = id
@@ -169,6 +176,11 @@ export default {
         type: "warning",
         fn: delList
       })
+    }
+    // 编辑
+    const editCategory =(item)=>{
+      editDialogInfo.value = true
+      options.editCategory = item
     }
     const deletAll = ()=> {
       confirm({
@@ -230,8 +242,12 @@ export default {
         loadingData.value = false
       })
     }
+    //新增按钮子组件传值给父组件调用getList方法刷新列表
+    const addGetList = ()=>{
+      getList()
+    }
     return {
-      options,page,total,loadingData,deleteListId,
+      options,page,total,loadingData,deleteListId,editDialogInfo,
       selectKey,
       dateValue,
       keyWords,
@@ -241,7 +257,7 @@ export default {
       diaClose,
       deletItem,
       deletAll,delList,
-      getList,handleSizeChange,handleCurrentChange,toType,toTime
+      getList,handleSizeChange,handleCurrentChange,toType,toTime,addGetList,editCategory
     }
   }
 };

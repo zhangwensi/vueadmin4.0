@@ -71,3 +71,11 @@ export function DeletList(data) {
         data
     })
 }
+// 编辑新闻
+export function editNews(data) {
+    return service.request({
+        method:"post",
+        baseURL: "api/editNews",
+        data
+    })
+}

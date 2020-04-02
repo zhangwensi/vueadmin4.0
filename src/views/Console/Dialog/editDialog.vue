@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog title="新增" :visible.sync="dialogTableVisible" @close="close" width="580px" @opened="opened">
+        <el-dialog title="编辑" :visible.sync="dialogTableVisible" @close="close" width="580px" @opened="opened">
             <el-form :model="form">
                 <el-form-item label="类型:"  :label-width="formLabelWidth">
                     <el-select v-model="form.region" placeholder="请选择">
@@ -24,15 +24,18 @@
 
 <script>
 import {ref,reactive,watch } from '@vue/composition-api'
-import { Addnews } from "@/api/news.js"
+import { editNews } from "@/api/news.js"
 export default {
-    name: 'Dialog',
+    name: 'editDialog',
     props: {
         flag: {
             type: Boolean,
             default: false
         },
-        category: {
+        editCategory: {
+            // type: Object
+        },
+        editCategoryType: {
             type: Array,
             default: ()=>[]
         }
@@ -44,10 +47,12 @@ export default {
             category: '',
             region: '',
             name: '',
-            textarea: ''
+            textarea: '',
+            categoryId:''//新闻列表的key值
         })
         const optionsData = reactive({
-            item:[]
+            item:[],
+            editCategory:[]
         })
         const close = () => {
             dialogTableVisible.value = false
@@ -59,39 +64,45 @@ export default {
         })
         
         const submit = ()=>{
-            addNews()
+            editListNews()
         }
         const opened =()=>{
-            optionsData.item = props.category
+            optionsData.item = props.editCategoryType
+            optionsData.editCategory = props.editCategory
+            form.name = optionsData.editCategory.title
+            form.categoryId = optionsData.editCategory.categoryId
         }
         const cancel = ()=>{
             dialogTableVisible.value = false
             form.region = ''
             form.name = ''
             form.textarea = ''
+            form.categoryId = ''
         }
-        // 调用添加新闻接口
-        const addNews = ()=>{
+        // 调用编辑新闻接口
+        const editListNews = ()=>{
             let reqData = {
-                type: form.region,
+                id: form.region,
                 title: form.name,
-                content: form.textarea
+                content: form.textarea,
+                categoryId: form.categoryId
             }
-            if( form.region !=='' && form.name !=='' && form.textarea !== '') {
-                Addnews(reqData).then(response=>{
+            if( reqData.id !=='' && reqData.title !=='' && reqData.content !== '' && reqData.categoryId !== '') {
+                editNews(reqData).then(response=>{
                     if ( response.data.resCode == 0) {
                         root.$message({
-                            message: "添加成功",
+                            message: "修改成功",
                             type: "success"
                         })
                         form.region = ''
                         form.name = ''
                         form.textarea = ''
+                        form.categoryId = ''
                         dialogTableVisible.value = false
                         emit('addGetList',true)
                     }else {
                         root.$message({
-                            message: "添加失败",
+                            message: "修改失败",
                             type: "error"
                         })
                     }
@@ -116,7 +127,7 @@ export default {
             close,
             opened,
             optionsData,submit,
-            addNews,cancel
+            editListNews,cancel
         }
     }
 }
