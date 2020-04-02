@@ -10,3 +10,30 @@ $MinMenu: 64px;
     -ms-#{$type}: $value;
     #{$type}: $value;
 }
+@mixin labelDom($algin,$width,$line-height) {
+    label {
+        float: left;
+        line-height: $line-height + px;
+        width: $width + px;
+        text-align: $algin;
+      }
+    .wrap-content {
+        margin-left: $width + px;
+    }
+}
+
+// 表格样式重置
+div.el-table {
+    td, th {text-align: center;}
+    th {
+        font-weight: bold;
+        color: #344a5f;
+    }
+    td {
+        font-size: 14px;
+    }
+}
+.el-table__body, .el-table__footer, .el-table__header {
+    table-layout: fixed;
+    border-collapse: collapse;
+}
