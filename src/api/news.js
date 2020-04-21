@@ -79,3 +79,12 @@ export function editNews(data) {
         data
     })
 }
+
+// 搜索接口
+export function seacrchList(data) {
+    return service.request({
+        method:"post",
+        baseURL:"api/searchList",
+        data
+    })
+}
