@@ -80,6 +80,7 @@
         <template slot-scope="scope">
           <el-button type="danger" size="mini" @click="deletItem(scope.row.categoryId)">删除</el-button>
           <el-button type="success" size="mini" @click="editCategory(scope.row)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="editDel(scope.row)">信息详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -307,6 +308,29 @@ export default {
       seacrchList(requData()).then(resp=>{
       })
     };
+    // 信息详情跳转
+    const  editDel=(data) =>{
+      // 预先存值
+      root.$store.commit('UPDATE_STATE_VALUE',{
+        id:{
+          value:data.categoryId,
+          sessionKey:'id',
+          session:true
+        },
+        title:{
+          value:data.title,
+          sessionKey:'title',
+          session:true
+        }
+      })
+      root.$router.push({
+        name:'EditDel',
+        params:{
+          id:data.categoryId,
+          title:data.title
+        }
+      })
+    } 
     // 获取列表信息
     const getList = () => {
       let reqListData = {
@@ -361,7 +385,8 @@ export default {
       editCategory,
       handleSelectionChange,
       search,
-      requData
+      requData,
+      editDel
     };
   }
 };
