@@ -5,7 +5,7 @@ const state = {
 
 const getters = {
     Id:state=>state.id,
-    Title:state=>state.title
+    Title:state=>state.titlem
 }
 
 const mutations = {

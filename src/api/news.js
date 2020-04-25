@@ -88,3 +88,13 @@ export function seacrchList(data) {
         data
     })
 }
+
+// 新闻详情
+
+export function editeSearch(data) {
+    return service.request({
+        method:"post",
+        baseURL:"api/editeSearch",
+        data
+    })
+}
