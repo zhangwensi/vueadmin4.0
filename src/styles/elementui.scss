@@ -1,0 +1,62 @@
+// li.el-menu-item.is-active {
+//     background-color: #f56c6c !important;
+//     color: #fff;
+// }
+
+.el-submenu .el-menu-item {
+    font-size: 14px;
+    color: #fff;
+    padding-left: 46px !important;
+    &.is-active {
+        background-color: rgba(248,108,108,0.2) !important;
+    }
+}
+.el-submenu{
+    &.is-active.is-opened .el-submenu__title {
+        background-color: #f56c6c !important;
+    }
+}
+
+.close {
+    .is-opened {
+        >.el-submenu__title {
+            background-color: #f56c6c !important;
+        }
+    }
+}
+.el-menu--vertical {
+    ul{
+        background-color:#344a5f !important;
+        li:hover {
+            background-color:  rgba(248,108,108,0.2) !important;
+        }
+    }
+}
+
+//更改弹窗的样式
+
+.el-dialog__body {
+    padding: 30px 47px !important;
+}
+.el-dialog__footer {
+    text-align: center !important;
+    padding-bottom: 50px;
+    .el-button {
+        width: 150px;
+        margin: 0 11px 0 11px;
+    }
+}
+
+//form 样式重置
+.el-form {
+    .el-form-item:last-child {
+        margin-bottom: 0px !important;
+    }
+}
+
+label.el-form-item__label {
+    text-align: center;
+}
+.el-form-item__label {
+    margin-bottom: 20px;
+}
