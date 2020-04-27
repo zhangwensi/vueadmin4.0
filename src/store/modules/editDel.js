@@ -1,11 +1,11 @@
 const state = {
-    id:'' || sessionStorage.getItem('edit_id'),
-    title:'' || sessionStorage.getItem('edit_title')
+    id:'' || sessionStorage.getItem('id'),
+    title:'' || sessionStorage.getItem('title')
 }
 
 const getters = {
-    Id:state=>state.id,
-    Title:state=>state.titlem
+    id:state=>state.id,
+    title:state=>state.titlem
 }
 
 const mutations = {
@@ -20,11 +20,11 @@ const mutations = {
 
     // SET_ID:(state,value)=>{
     //     state.id = value
-    //     sessionStorage.setItem('edit_id',value)
+    //     sessionStorage.setItem('id',value)
     // },
     // SET_TITLE:(state,value)=>{
     //     state.title = value
-    //     sessionStorage.setItem('edit_title',value)
+    //     sessionStorage.setItem('title',value)
     // }
 }
 

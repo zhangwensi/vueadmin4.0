@@ -7,10 +7,18 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="新闻标题" class="edit-form-title">
-                <el-input v-model="form.title"  disabled></el-input>
+                <el-input v-model="form.title"></el-input>
             </el-form-item>
             <el-form-item label="缩略图">
-                缩略图
+                <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
             </el-form-item>
             <el-form-item label="新闻标题">
                 <el-date-picker
@@ -42,14 +50,15 @@ export default {
     components:{quillEditor},
     setup(props,{refs,root}) {
         const data = reactive({
-            id:root.$route.params.id || root.$store.getters["Id"],
+            id:root.$route.params.id || root.$store.getters["id"],
             category:[]
         })
         const form = reactive({
             title:'',
             dateTime:'',
             categoryType:'',
-            content:''
+            content:'',
+            imageUrl:''
         })
         // 调用获取新闻列表接口,渲染select组件
         const getInform =()=>{
@@ -75,15 +84,28 @@ export default {
                 })
             })
         }
-        // let id = root.$route.params.id || root.$store.getters["Id"]
-        // let title = root.$route.params.title  || root.$store.getters["Title"]
+         const handleAvatarSuccess =(res, file) =>{
+            form.imageUrl = URL.createObjectURL(file.raw);
+        }
+        const beforeAvatarUpload =(file)=> {
+            const isJPG = file.type === 'image/jpeg';
+            const isLt2M = file.size / 1024 / 1024 < 2;
+
+            if (!isJPG) {
+            this.$message.error('上传头像图片只能是 JPG 格式!');
+            }
+            if (!isLt2M) {
+            this.$message.error('上传头像图片大小不能超过 2MB!');
+            }
+            return isJPG && isLt2M;
+        }
         onMounted(()=>{
             getInform(),
             getdetInfo()
         })
         return {
             data,form,
-            getInform
+            getInform,handleAvatarSuccess,beforeAvatarUpload
         }
     }
 }
@@ -98,14 +120,37 @@ export default {
     }
     .edit-form-content{
         .el-form-item__content{
-            min-height: 300px;
+            min-height: 150px;
             margin: 0 200px 40px 80px;
             .quill-editor{
                 div:nth-child(2){
-                    height: 300px;
+                    height: 150px;
                 }
             }
         }
     }
 }
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
