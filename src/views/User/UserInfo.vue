@@ -12,10 +12,10 @@
               </el-select> -->
             </el-col>
             <el-col :span="6">
-              <el-input></el-input>
+              <el-input placeholder="请输入搜索条件"></el-input>
             </el-col>
             <el-col :span="2">
-              <el-button type="danger">搜索</el-button>
+              <el-button type="primary">搜索</el-button>
             </el-col>
           </el-row>
         </div>
@@ -24,14 +24,17 @@
         <el-button type="danger" class="pull-right">添加用户</el-button>
       </el-col>
     </el-row>
+    <div style="min-height:30px"></div>
+    <tableVue/>
   </div>
 </template>
 <script>
 import { reactive } from "@vue/composition-api";
 import selectCp from "@c/select"
+import tableVue from "@c/tableVue"
 export default {
   name: "userInfo",
-  components:{selectCp},
+  components:{selectCp ,tableVue},
   setup(props, { root }) {
     const data = reactive({
       configOption:['name','phone','email']
