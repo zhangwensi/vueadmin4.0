@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
     <div style="min-height:30px"></div>
-    <tableVue/>
+    <tableVue :tableCfg="data.tableConfig"/>
   </div>
 </template>
 <script>
@@ -37,7 +37,43 @@ export default {
   components:{selectCp ,tableVue},
   setup(props, { root }) {
     const data = reactive({
-      configOption:['name','phone','email']
+      configOption:['name','phone','email'],
+      // 表格配置参数
+      tableConfig:{
+        // 配置选择框是否展示
+        selection:false,
+        // 表头
+        tableThead:[
+          {
+            type:'email',
+            typename:'邮箱/用户名'
+          },
+          {
+            type:'name',
+            typename:'真实姓名'
+          },
+          {
+            type:'phone',
+            typename:'手机号码'
+          },
+          {
+            type:'area',
+            typename:'地区'
+          },
+          {
+            type:'role',
+            typename:'角色'
+          },
+          {
+            type:'state',
+            typename:'禁用状态'
+          },
+          {
+            type:'operation',
+            typename:'操作'
+          }
+        ]
+      },
     });
     return {
       data
