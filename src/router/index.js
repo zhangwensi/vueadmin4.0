@@ -76,7 +76,7 @@ const routes = [
         meta: {
           name:"信息详情"
         },
-        component:()=>import("../views/Console/editDel/editDel.vue")
+        component:()=>import("../views/News/editDel/editDel.vue")
       }
     ]
   },
