@@ -25,7 +25,15 @@
       </el-col>
     </el-row>
     <div style="min-height:30px"></div>
-    <tableVue :tableCfg="data.tableConfig"/>
+    <tableVue :tableCfg="data.tableConfig">
+      <template v-slot:state="slotDate">
+        <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+      </template>
+      <template v-slot:operation="slotDate">
+        <el-button size="mini" type="danger" @click="deleUser(slotDate.data)">删除</el-button>
+        <el-button size="mini" type="success" @click="editUser(slotDate.data)">编辑</el-button>
+      </template>
+    </tableVue>
   </div>
 </template>
 <script>
@@ -66,17 +74,30 @@ export default {
           },
           {
             type:'state',
-            typename:'禁用状态'
+            typename:'禁用状态',
+            isSlot:'slot',
+            slotType:'state'
           },
           {
             type:'operation',
-            typename:'操作'
+            typename:'操作',
+            isSlot:'slot',
+            slotType:'operation'
           }
-        ]
+        ],
+        // 配置表格请求接口
+        requestUrl:''
       },
     });
+
+    const deleUser=(params)=>{
+      console.log(params)
+    }
+    const editUser=(params)=>{
+      console.log(params)
+    } 
     return {
-      data
+      data,deleUser,editUser
     };
   }
 };
