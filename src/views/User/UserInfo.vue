@@ -29,6 +29,7 @@
       <template v-slot:state="slotDate">
         <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
       </template>
+      <!-- slotDate.data的data为插槽中的绑定的data数据 -->
       <template v-slot:operation="slotDate">
         <el-button size="mini" type="danger" @click="deleUser(slotDate.data)">删除</el-button>
         <el-button size="mini" type="success" @click="editUser(slotDate.data)">编辑</el-button>
@@ -38,6 +39,7 @@
 </template>
 <script>
 import { reactive } from "@vue/composition-api";
+import {requestUrl} from "@/api/requestUrl.js"
 import selectCp from "@c/select"
 import tableVue from "@c/tableVue"
 export default {
@@ -49,7 +51,7 @@ export default {
       // 表格配置参数
       tableConfig:{
         // 配置选择框是否展示
-        selection:false,
+        selection:true,
         // 表头
         tableThead:[
           {
@@ -57,7 +59,7 @@ export default {
             typename:'邮箱/用户名'
           },
           {
-            type:'name',
+            type:'realname',
             typename:'真实姓名'
           },
           {
@@ -65,7 +67,7 @@ export default {
             typename:'手机号码'
           },
           {
-            type:'area',
+            type:'address',
             typename:'地区'
           },
           {
@@ -86,7 +88,10 @@ export default {
           }
         ],
         // 配置表格请求接口
-        requestUrl:''
+        requestUrl:{
+          methods:'get',
+          requestUrl:requestUrl.getUser
+        }
       },
     });
 
