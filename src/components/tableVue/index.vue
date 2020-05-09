@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="data.tableData" border style="width:100%" @selection-change="handleSelectionChange">
+        <el-table :data="data.tableData" border style="width:100%" @selection-change="handleSelectionChange" v-loading="loadData">
             <el-table-column v-if="data.tableConfg.selection" type="selection" width="45" style="padding-left:15px"></el-table-column>
             <template v-for="item in data.tableConfg.tableThead">
                 <!-- 判读是否为插槽 -->
@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import { reactive, onBeforeMount } from '@vue/composition-api'
+import { reactive,ref, onBeforeMount, onMounted } from '@vue/composition-api'
+import { getUserInfo } from '@/api/getUserInfo.js'
 export default {
     name: 'tableVue',
     props:{
@@ -29,15 +30,13 @@ export default {
     setup(props,{root}) {
         const data = reactive({
             tableConfg:{
-                requsetUrl:'',
                 tableThead:[],
                 selection:true
             },
-            tableData:[
-                {email:'zhang@qq.com',name:'张凯伦',phone:'13814114898',area:'南京',role:'超管',state:'禁用',operation:'操作'},
-                {email:'renbin@qq.com',name:'任斌',phone:'13814114898',area:'南京',role:'超管',state:'禁用',operation:'操作'}
-            ]
+            tableData:[],
+            requestData:{}
         })
+        const loadData = ref(false)
         // 初始化表格配置数据
         const initTableCfg = ()=>{
             let initTable = props.tableCfg
@@ -48,15 +47,35 @@ export default {
                     data.tableConfg[item] = props.tableCfg[item]
                 }
             }
+            data.requestData = props.tableCfg.requestUrl
             // data.tableConfg.tableThead = props.tableCfg.tableThead
             // data.tableConfg.selection = props.tableCfg.selection
+        }
+        // 获取用户信息列表
+        const getUserData = () =>{
+            loadData.value = true
+            let reqData = data.requestData
+            getUserInfo(reqData).then(response=>{
+                let respData = response.data.data
+                data.tableData = respData
+                loadData.value = false
+            }).catch(err=>{
+                $message({
+                    message:'获取数据失败',
+                    type:'danger'
+                })
+                loadData.value = false
+            })
         }
         onBeforeMount(()=>{
             initTableCfg()
         })
+        onMounted(()=>{
+            getUserData()
+        })
         const handleSelectionChange =()=>{}
         return {
-            data,handleSelectionChange
+            data,loadData,handleSelectionChange,getUserData
         }
     }
 }

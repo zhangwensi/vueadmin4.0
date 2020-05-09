@@ -11,7 +11,6 @@ router.beforeEach((to, from, next) => {
     if(userTK()){
         next()
         // 路由的动态添加  为每个登录的角色分配不同的菜单
-        console.log('存在')
     } else {
         /* 用户to.path 代替要进入的页面 ,需要更配置的白名单比较，如果有直接进入  
         否则重新进入beforeEach,再一次进入的时候to.path的值为'./login'所以直接执行next()
