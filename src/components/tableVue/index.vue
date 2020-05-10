@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="userInfo">
         <el-table :data="data.tableData" border style="width:100%" @selection-change="handleSelectionChange" v-loading="loadData">
             <el-table-column v-if="data.tableConfg.selection" type="selection" width="45" style="padding-left:15px"></el-table-column>
             <template v-for="item in data.tableConfg.tableThead">
@@ -13,12 +13,24 @@
                 <el-table-column :key="item.typename" :prop="item.type" :label="item.typename" v-else></el-table-column>
             </template>
         </el-table>
+        <!-- 分页 -->
+        <el-pagination class="userInfo-page"
+            @size-change="handleSizeChange"
+            background
+            @current-change="handleCurrentChange"
+            :current-page="data.pageSizeData.currentPage"
+            :page-sizes="data.pageSizeData.pageSizes"
+            :page-size="data.pageSizeData.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="data.pageSizeData.total">
+        </el-pagination>
     </div>
 </template>
 
 <script>
-import { reactive,ref, onBeforeMount, onMounted } from '@vue/composition-api'
-import { getUserInfo } from '@/api/getUserInfo.js'
+import { reactive,ref, onBeforeMount, onMounted,watch } from '@vue/composition-api'
+import {common} from './tableGetData.js'
+import {pageHook} from './paginationPage.js'
 export default {
     name: 'tableVue',
     props:{
@@ -34,8 +46,16 @@ export default {
                 selection:true
             },
             tableData:[],
-            requestData:{}
+            requestData:{},
+            pageSizeData:{
+                currentPage:1,
+                pageSizes:[10, 20, 30, 50],
+                pageSize:10,
+                total:50
+            }
         })
+        const { tableData,getTableData } =common()
+        const {pageSizeData,getUserListData,getCurrentUaer,respData1} =pageHook()
         const loadData = ref(false)
         // 初始化表格配置数据
         const initTableCfg = ()=>{
@@ -53,20 +73,37 @@ export default {
         }
         // 获取用户信息列表
         const getUserData = () =>{
-            loadData.value = true
             let reqData = data.requestData
-            getUserInfo(reqData).then(response=>{
-                let respData = response.data.data
-                data.tableData = respData
-                loadData.value = false
-            }).catch(err=>{
-                $message({
-                    message:'获取数据失败',
-                    type:'danger'
-                })
-                loadData.value = false
-            })
+            let reqPage = data.pageSizeData
+            getTableData({reqData,reqPage,loadData})
+            // loadData.value = true
+            // let reqData = data.requestData
+            // getUserInfo(reqData).then(response=>{
+            //     let respData = response.data.data
+            //     data.tableData = respData
+            //     loadData.value = false
+            // }).catch(err=>{
+            //     $message({
+            //         message:'获取数据失败',
+            //         type:'danger'
+            //     })
+            //     loadData.value = false
+            // })
         }
+        // watch(()=>tableData.item,(newValue,oldValue)=>{
+        //     data.tableData = newValue
+        // })
+        watch([
+            ()=>{tableData.item},
+            ()=>{tableData.total}
+        ],([item,total])=>{
+            data.tableData = tableData.item 
+            data.pageSizeData.total = tableData.total
+        })
+
+        watch(()=>respData1.item,(newValue,oldValue)=>{
+            data.tableData = newValue
+        })
         onBeforeMount(()=>{
             initTableCfg()
         })
@@ -74,13 +111,30 @@ export default {
             getUserData()
         })
         const handleSelectionChange =()=>{}
+        const handleSizeChange =(val)=>{
+            data.pageSizeData.pageSize = val
+            let reqData = data.requestData
+            let reqPage = data.pageSizeData
+            getUserListData({reqData,reqPage,loadData})
+        }
+        const handleCurrentChange =(val)=>{
+            data.pageSizeData.currentPage = val
+            let reqData = data.requestData
+            let reqPage = data.pageSizeData
+            getCurrentUaer({reqData,reqPage,loadData})
+        }
         return {
-            data,loadData,handleSelectionChange,getUserData
+            data,loadData,handleSelectionChange,getUserData,handleSizeChange,handleCurrentChange
         }
     }
 }
 </script>
 
 <style lang="scss">
-    
+    .userInfo{
+        .userInfo-page {
+            margin-top: 20px;
+            text-align: right;
+        }
+    }
 </style>
