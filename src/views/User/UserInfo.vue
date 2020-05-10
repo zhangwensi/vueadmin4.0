@@ -89,7 +89,7 @@ export default {
         ],
         // 配置表格请求接口
         requestUrl:{
-          methods:'get',
+          methods:'post',
           requestUrl:requestUrl.getUser
         }
       },
