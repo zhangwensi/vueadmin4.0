@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog title="新增" :visible.sync="dialogTableVisible" @close="close" width="580px" @opened="opened">
+        <el-dialog title="新增" :close-on-click-modal="cancelClose" :visible.sync="dialogTableVisible" @close="close" width="580px" @opened="opened">
             <el-form :model="form">
                 <el-form-item label="类型:"  :label-width="formLabelWidth">
                     <el-select v-model="form.region" placeholder="请选择">
@@ -49,6 +49,9 @@ export default {
         const optionsData = reactive({
             item:[]
         })
+        // 取消点击关闭弹窗属性
+        const cancelClose = ref(false)
+        
         const close = () => {
             dialogTableVisible.value = false
             // emit("update:flag",false)
@@ -116,7 +119,7 @@ export default {
             close,
             opened,
             optionsData,submit,
-            addNews,cancel
+            addNews,cancel,cancelClose
         }
     }
 }
