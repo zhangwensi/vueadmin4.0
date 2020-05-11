@@ -12,7 +12,7 @@
               </el-select> -->
             </el-col>
             <el-col :span="6">
-              <el-input placeholder="请输入搜索条件"></el-input>
+              <el-input v-model="serach" placeholder="请输入搜索条件"></el-input>
             </el-col>
             <el-col :span="2">
               <el-button type="primary">搜索</el-button>
@@ -21,7 +21,7 @@
         </div>
       </el-col>
       <el-col :span="4">
-        <el-button type="danger" class="pull-right">添加用户</el-button>
+        <el-button type="danger" class="pull-right" @click="dialogVisible=true">添加用户</el-button>
       </el-col>
     </el-row>
     <div style="min-height:30px"></div>
@@ -35,16 +35,21 @@
         <el-button size="mini" type="success" @click="editUser(slotDate.data)">编辑</el-button>
       </template>
     </tableVue>
+    <!-- dialog -->
+    <DialogUser 
+    :flag="dialogVisible"
+    @close="diaClose"></DialogUser>
   </div>
 </template>
 <script>
-import { reactive } from "@vue/composition-api";
+import { reactive ,ref} from "@vue/composition-api";
 import {requestUrl} from "@/api/requestUrl.js"
 import selectCp from "@c/select"
 import tableVue from "@c/tableVue"
+import DialogUser from "./Dialog/addUserInfo.vue"
 export default {
   name: "userInfo",
-  components:{selectCp ,tableVue},
+  components:{selectCp ,tableVue,DialogUser},
   setup(props, { root }) {
     const data = reactive({
       configOption:['name','phone','email'],
@@ -94,15 +99,21 @@ export default {
         }
       },
     });
-
+    // 弹窗默认不显示
+    const dialogVisible = ref(false)
+    const serach = ref('')
     const deleUser=(params)=>{
       console.log(params)
     }
     const editUser=(params)=>{
       console.log(params)
-    } 
+    }
+    // 关闭弹窗 父组件close与dialog中的emit中的close对应
+    const diaClose = ()=>{
+      dialogVisible.value = false
+    }
     return {
-      data,deleUser,editUser
+      data,deleUser,editUser,dialogVisible,diaClose,serach
     };
   }
 };
