@@ -7,3 +7,12 @@ export function getUserInfo(params) {
         data:params.data
     })
 }
+
+
+export function getCityPicker  (data) {
+    return service.request({
+        method:'post',
+        baseURL:'/api/getCityPicker',
+        data
+    })
+}

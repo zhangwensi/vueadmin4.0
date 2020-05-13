@@ -11,35 +11,14 @@
                 <el-form-item label="用户号码：" :label-width="form.formLabelWidth" >
                     <el-input type="text" v-model="form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
                 </el-form-item>
-                <el-form-item label="地区：" :label-width="form.formLabelWidth" >
-                    <div class="userArea">
-                        <el-row :gutter="2">
-                            <el-col :span="6">
-                                <el-select v-model="form.region" placeholder="请选择">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-col>
-                            <el-col :span="6">
-                                <el-select v-model="form.region" placeholder="请选择">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-col>
-                            <el-col :span="6">
-                                <el-select v-model="form.region" placeholder="请选择">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-col>
-                            <el-col :span="6">
-                                <el-select v-model="form.region" placeholder="请选择">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-col>
-                        </el-row>
-                    </div>
+                <el-form-item label="地区：" :label-width="form.formLabelWidth" prop="ddd">
+                    <cityPicker />
+                </el-form-item>
+                <el-form-item label="是否启用：" :label-width="form.formLabelWidth" >
+                    <el-input type="text" v-model="form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
+                </el-form-item>
+                <el-form-item label="用户角色：" :label-width="form.formLabelWidth" >
+                    <el-input type="text" v-model="form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -52,8 +31,10 @@
 
 <script>
 import {reactive,ref,watch} from "@vue/composition-api"
+import cityPicker from '@c/cityPicker'
 export default {
     name:'addUserInfo',
+    components:{cityPicker},
     props:{
         flag:{
             type:Boolean,
@@ -65,9 +46,6 @@ export default {
             userEmail:'',
             userName:'',
             phone:null,
-            region:{
-                item:[],
-            },
             formLabelWidth:'82px'
         })
 
@@ -85,7 +63,6 @@ export default {
 
         const cancel = ()=>{
             dialogVisible.value = false
-            form.region = {}
             form.userEmail = ''
             form.phone = null
             form.userName = ''
@@ -93,7 +70,6 @@ export default {
 
         const submit = ()=>{
             dialogVisible.value = false
-            form.region = {}
             form.userEmail = ''
             form.phone = null
             form.userName = ''
@@ -114,9 +90,4 @@ export default {
         overflow: hidden;
     }
 }
-.el-form-item {
-        &.el-form-item__label {
-            text-align: right !important;
-        }
-    }
 </style>
