@@ -12,13 +12,13 @@
                     <el-input type="text" v-model="form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
                 </el-form-item>
                 <el-form-item label="地区：" :label-width="form.formLabelWidth" prop="ddd">
-                    <cityPicker />
+                    <cityPicker :cityPickerData.sync="form.cityPickerData"/>
                 </el-form-item>
                 <el-form-item label="是否启用：" :label-width="form.formLabelWidth" >
-                    <el-input type="text" v-model="form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
+                    <el-input type="text" class="addInput" placeholder="请输入用户手机号码"></el-input>
                 </el-form-item>
                 <el-form-item label="用户角色：" :label-width="form.formLabelWidth" >
-                    <el-input type="text" v-model="form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
+                    <el-input type="text"  class="addInput" placeholder="请输入用户手机号码"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -46,7 +46,8 @@ export default {
             userEmail:'',
             userName:'',
             phone:null,
-            formLabelWidth:'82px'
+            formLabelWidth:'82px',
+            cityPickerData:{}
         })
 
         const dialogVisible = ref(false)
