@@ -15,10 +15,17 @@
                     <cityPicker :cityPickerData.sync="form.cityPickerData"/>
                 </el-form-item>
                 <el-form-item label="是否启用：" :label-width="form.formLabelWidth" >
-                    <el-input type="text" class="addInput" placeholder="请输入用户手机号码"></el-input>
+                    <el-radio-group v-model="form.radio" @change="roleStatus">
+                        <el-radio  label="0">启用</el-radio>
+                        <el-radio  label="1">禁止</el-radio>
+                    </el-radio-group>
                 </el-form-item>
                 <el-form-item label="用户角色：" :label-width="form.formLabelWidth" >
-                    <el-input type="text"  class="addInput" placeholder="请输入用户手机号码"></el-input>
+                    <el-checkbox-group v-model="form.checkList" @change="roleChange" :max="1">
+                        <el-checkbox label="管理员"></el-checkbox>
+                        <el-checkbox label="普通用户"></el-checkbox>
+                        <el-checkbox label="超级管理员"></el-checkbox>
+                    </el-checkbox-group>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -43,10 +50,12 @@ export default {
     },
     setup(props,{refs,root,emit}){
         const form = reactive({
+            radio:'1',//默认选中
             userEmail:'',
             userName:'',
             phone:null,
             formLabelWidth:'82px',
+            checkList:[],
             cityPickerData:{}
         })
 
@@ -59,6 +68,12 @@ export default {
         
         const close = ()=>{
             dialogVisible.value = false
+            // 清空dialog中所有数据
+            form.userEmail = ''
+            form.userName = ''
+            form.phone = null
+            // 清空selection时需要向下传递一个空对象
+            form.cityPickerData = {}
             emit("close",false)
         }
 
@@ -67,16 +82,31 @@ export default {
             form.userEmail = ''
             form.phone = null
             form.userName = ''
+            form.cityPickerData = {}
         }
 
         const submit = ()=>{
+            // 先传入目标值 调用addUser接口
+
             dialogVisible.value = false
             form.userEmail = ''
             form.phone = null
             form.userName = ''
+            form.cityPickerData = {}
+        }
+        // 用户角色选择变更存值
+
+        const roleChange = (val) => {
+            console.log(val[0])
+        }
+
+        // 用户状态选择变更存值
+        const roleStatus =(val) =>{
+            // 后台状态是0或1
+            console.log(val)
         }
         return {
-            dialogVisible,close,form,cancelClose,cancel,submit
+            dialogVisible,close,form,cancelClose,cancel,submit,roleChange,roleStatus
         }
     }
 }
@@ -89,6 +119,12 @@ export default {
     }
     .userArea {
         overflow: hidden;
+    }
+    label.el-radio {
+        padding-right: 100px;
+    }
+    label.el-checkbox {
+        margin-right: 50px;
     }
 }
 </style>
