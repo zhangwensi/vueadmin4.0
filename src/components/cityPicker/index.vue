@@ -68,13 +68,21 @@ export default {
             areaData:[],
             townData:[]
         })
-        // 返回给外部的数据
+        // 返回给外部的省市编码数据
         const resultData = reactive({
             province:'',
             city:'',
             area:'',
             town:'',
         })
+        // 返回给外部的省市名称数据
+        const resultDataName = reactive({
+            provinceName:'',
+            cityName:'',
+            areaName:'',
+            townName:'',
+        })
+
         // 获取省
         const getPerviceData = () =>{
             getCityPicker({type:'province'}).then(response=>{
@@ -91,6 +99,12 @@ export default {
             resetPickerData({type:'city'})
             getCityPicker({type:'city',province:val}).then(response=>{
                 data.cityData = response.data.data
+                // 获取省级级级名称
+                data.provinceData.map(item=>{
+                    if(item.province=== val) {
+                        resultDataName.provinceName = item.name
+                    }
+                })
             }).catch(err=>{
                 root.$message({
                     message:'获取失败',
@@ -103,6 +117,12 @@ export default {
             resetPickerData({type:'area'})
             getCityPicker({type:'area',province:data.province,city:val}).then(response=>{
                 data.areaData = response.data.data
+                // 获取市级级名称
+                data.cityData.map(item=>{
+                    if(item.city=== val) {
+                        resultDataName.cityName = item.name
+                    }
+                })
             }).catch(err=>{
                 root.$message({
                     message:'获取失败',
@@ -115,6 +135,12 @@ export default {
             resetPickerData({type:'town'})
             getCityPicker({type:'town',province:data.province,city:data.city,area:val}).then(response=>{
                 data.townData = response.data.data
+                // 获取县级名称
+                data.areaData.map(item=>{
+                    if(item.area=== val) {
+                        resultDataName.areaName = item.name
+                    }
+                })
             }).catch(err=>{
                 root.$message({
                     message:'获取失败',
@@ -122,7 +148,13 @@ export default {
                 })
             })
         }
-        const handlerTown = () => {
+        const handlerTown = (val) => {
+            // 获取镇及名称
+            data.townData.map(item=>{
+                if(item.town=== val) {
+                    resultDataName.townName = item.name
+                }
+            })
             resetPickerData({type:''})
         }
         // 重置省市区县街道
@@ -153,14 +185,18 @@ export default {
         // 获取省份信息
             getPerviceData()
         })
-        // 监听省市县乡镇值返回给cityPicker组件,主要监听resultData中的值
+        // 监听省市县乡镇值返回给cityPicker组件,主要监听resultData中的值及resultDataName中的值
         watch([
             ()=>{resultData.province},
             ()=>{resultData.city},
             ()=>{resultData.area},
-            ()=>{resultData.town}
-        ],([province,city,area,town])=>{
-            emit("update:cityPickerData",resultData)
+            ()=>{resultData.town},
+            ()=>{resultDataName.provinceName},
+            ()=>{resultDataName.cityName},
+            ()=>{resultDataName.areaName},
+            ()=>{resultDataName.townName}
+        ],([province,city,area,town,provinceName,cityName,areaName,townName])=>{
+            emit("update:cityPickerData",{resultData,resultDataName})
         })
 
         return {
