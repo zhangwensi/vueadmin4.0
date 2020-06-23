@@ -2,6 +2,9 @@
     <div>
         <el-dialog title="新增用户" width="630px" :close-on-click-modal="cancelClose" :visible.sync="dialogVisible" @close="close">
             <el-form :model="data.form" class="labelStyle">
+                <el-form-item label="登录名称：" :label-width="data.formLabelWidth" >
+                    <el-input v-model="data.form.userName" class="addInput" placeholder="请输入用户邮箱"></el-input>
+                </el-form-item>
                 <el-form-item label="用户邮箱：" :label-width="data.formLabelWidth" >
                     <el-input v-model="data.form.userEmail" class="addInput" placeholder="请输入用户邮箱"></el-input>
                 </el-form-item>
@@ -9,7 +12,7 @@
                     <el-input type="password" v-model="data.form.userPassword" class="addInput" placeholder="请输入用户密码"></el-input>
                 </el-form-item>
                 <el-form-item label="用户姓名：" :label-width="data.form.formLabelWidth" >
-                    <el-input v-model="data.form.userName" class="addInput" placeholder="请输入用户姓名"></el-input>
+                    <el-input v-model="data.form.realName" class="addInput" placeholder="请输入用户姓名"></el-input>
                 </el-form-item>
                 <el-form-item label="用户号码：" :label-width="data.form.formLabelWidth" >
                     <el-input v-model="data.form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
@@ -58,6 +61,7 @@ export default {
                 radio:'1',//默认选中
                 userEmail:'',
                 userName:'',
+                realName:'',
                 userPassword: '',
                 phone:null,
                 formLabelWidth:'82px',
@@ -72,6 +76,7 @@ export default {
             data.form.phone = null
             data.form.userPassword = ''
             data.form.userName = ''
+            data.form.realName = ''
             data.form.cityPickerData = {}
         }
 
@@ -88,24 +93,37 @@ export default {
         }
 
         const cancel = ()=>{
-            console.log(data.form.cityPickerData) //  6-24 将设置的值传给接口入库
-            return false
             clearData()
         }
 
         const submit = ()=>{
+            // 先处理 地址数据
+            const address = JSON.parse(JSON.stringify(data.form.cityPickerData.resultDataName))
+            const realAddress = address.provinceName+address.cityName+address.areaName+address.townName
             // 先传入目标值 调用addUser接口
             const reqData = {
                 username : data.form.userName,
                 email : data.form.userEmail,
                 password : data.form.userPassword,
                 phone : data.form.phone,
-                address : data.form.cityPickerData,
-                role : data.form.userName,
-                realname : data.form.userName,
-                state : data.form.userName,
+                address : realAddress,
+                role : data.form.checkList[0],
+                realname : data.form.realName,
+                state : data.form.radio,
             }
-            clearData()
+            console.log(reqData)
+                addUsers(reqData).then(resp=>{
+                    if(resp.code === 0) {
+                        root.$message({
+                            type:"success",
+                            message: resp.message
+                        })
+                        clearData()
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                    clearData()
+                })
         }
         // 用户角色选择变更存值
         const roleChange = (val) => {

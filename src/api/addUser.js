@@ -2,7 +2,7 @@ import service from "@/guide/interceptor.js";
 
 export const addUsers = (data) => {
     return service.request({
-        mothd:'post',
+        method:'post',
         baseURL: '/api/addUser',
         data
     })
