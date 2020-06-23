@@ -14,12 +14,13 @@ export function common(){
             methods:params.reqData.methods,
             data:params.reqPage
         }
-        getUserInfo(reqData).then(response=>{
-            let respData = response.data
+        getUserInfo(reqData).then(resp=>{
+            let respData = resp.data
             tableData.item = respData.data
             tableData.total = respData.total.cnt
             params.loadData.value = false
-        }).catch(err=>{
+        })
+        .catch(err=>{
             console.log(err)
             params.loadData.value = false
         })

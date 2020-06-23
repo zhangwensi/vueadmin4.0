@@ -27,7 +27,7 @@
     <div style="min-height:30px"></div>
     <tableVue :tableCfg="data.tableConfig">
       <template v-slot:state="slotDate">
-        <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        <el-switch active-color="#13ce66" v-model="slotDate.data.state" inactive-value="1" active-value="0" inactive-color="#ff4949"></el-switch>
       </template>
       <!-- slotDate.data的data为插槽中的绑定的data数据 -->
       <template v-slot:operation="slotDate">
@@ -44,6 +44,7 @@
 <script>
 import { reactive ,ref} from "@vue/composition-api";
 import {requestUrl} from "@/api/requestUrl.js"
+import {getUserInfo} from "@/api/getUserInfo.js"
 import selectCp from "@c/select"
 import tableVue from "@c/tableVue"
 import DialogUser from "./Dialog/addUserInfo.vue"
@@ -95,12 +96,14 @@ export default {
         // 配置表格请求接口
         requestUrl:{
           methods:'post',
-          requestUrl:requestUrl.getUser
+          requestUrl:requestUrl.getUser,
+          data: ''
         }
       },
     });
     // 弹窗默认不显示
     const dialogVisible = ref(false)
+    const hasSubmit = ref(false)
     const serach = ref('')
     const deleUser=(params)=>{
       console.log(params)
