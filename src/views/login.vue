@@ -118,7 +118,6 @@ export default {
     };
     // 验证码验证
     let checkCode = (rule, value, callback) => {
-      console.log(value);
       if (!value) {
         return callback(new Error("验证码不能为空"));
       }
@@ -285,7 +284,6 @@ export default {
             btnDis.value = false;
             // 倒计时  调用定时器
             timeDown(60);
-            console.log(response);
           })
           .catch(err => {
             console.log(err);
