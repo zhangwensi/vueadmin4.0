@@ -14,16 +14,25 @@
             </template>
         </el-table>
         <!-- 分页 -->
-        <el-pagination class="userInfo-page"
-            @size-change="handleSizeChange"
-            background
-            @current-change="handleCurrentChange"
-            :current-page="data.pageSizeData.currentPage"
-            :page-sizes="data.pageSizeData.pageSizes"
-            :page-size="data.pageSizeData.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="data.pageSizeData.total">
-        </el-pagination>
+        <div class="table-footer">
+            <el-row class="footer-box">
+                <el-col :span="4">
+                    <slot name="tableLeftButton"></slot>
+                </el-col>
+                <el-col :span="20" class="userInfo-page">
+                    <el-pagination class="userInfo-page"
+                        @size-change="handleSizeChange"
+                        background
+                        @current-change="handleCurrentChange"
+                        :current-page="data.pageSizeData.currentPage"
+                        :page-sizes="data.pageSizeData.pageSizes"
+                        :page-size="data.pageSizeData.pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="data.pageSizeData.total">
+                    </el-pagination>
+                </el-col>
+            </el-row> 
+        </div>
     </div>
 </template>
 
@@ -37,9 +46,13 @@ export default {
         tableCfg:{
             type:Object,
             default:()=>{}
+        },
+        tableData:{ 
+            type:Object,
+            default:()=>{}
         }
     },
-    setup(props,{root}) {
+    setup(props,{root,emit}) {
         const data = reactive({
             tableConfg:{
                 tableThead:[],
@@ -110,7 +123,12 @@ export default {
         onMounted(()=>{
             getUserData()
         })
-        const handleSelectionChange =()=>{}
+        const handleSelectionChange =(val)=>{
+            let rowData = {
+                phone: val.map(item=>item.phone)
+            }
+            emit("update:tableData",rowData)
+        }
         const handleSizeChange =(val)=>{
             data.pageSizeData.pageSize = val
             let reqData = data.requestData
@@ -132,8 +150,10 @@ export default {
 
 <style lang="scss">
     .userInfo{
-        .userInfo-page {
+        .footer-box {
             margin-top: 20px;
+        }
+        .userInfo-page {
             text-align: right;
         }
     }
