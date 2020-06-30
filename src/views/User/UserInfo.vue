@@ -62,7 +62,12 @@ export default {
     const data = reactive({
       configOption: ["name", "phone", "email"],
       // 批量删除的数据
-      tableBatchData:{},
+      tableBatchData:{
+          type: "tableLeftButton",
+          typename: "批量删除",
+          isSlot: "slot",
+          slotType: "tableLeftButton"
+      },
       // 表格配置参数
       tableConfig: {
         // 配置选择框是否展示
@@ -100,12 +105,6 @@ export default {
             typename: "操作",
             isSlot: "slot",
             slotType: "operation"
-          },
-          {
-            type: "tableLeftButton",
-            typename: "批量删除",
-            isSlot: "slot",
-            slotType: "tableLeftButton"
           }
         ],
         // 配置表格请求接口
