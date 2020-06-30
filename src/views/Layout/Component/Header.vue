@@ -45,6 +45,7 @@ export default {
   right: 0px;
   height: 75px;
   background-color: #fff;
+  z-index: 9;
   // -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);  v-2019-12-29老版本
   @include webkit(box-shadow,0 3px 16px 0 rgba(0, 0, 0, 0.1));
   @include webkit(transition,all 0.3s ease 0s);

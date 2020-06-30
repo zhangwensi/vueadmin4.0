@@ -20,7 +20,7 @@
                     <slot name="tableLeftButton"></slot>
                 </el-col>
                 <el-col :span="20" class="userInfo-page">
-                    <el-pagination class="userInfo-page"
+                    <el-pagination
                         @size-change="handleSizeChange"
                         background
                         @current-change="handleCurrentChange"
