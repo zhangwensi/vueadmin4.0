@@ -52,6 +52,7 @@
 import { reactive, ref } from "@vue/composition-api";
 import { requestUrl } from "@/api/requestUrl.js";
 import { getUserInfo } from "@/api/getUserInfo.js";
+import { delSelectUsers } from "@/api/addUser.js";
 import selectCp from "@c/select";
 import tableVue from "@c/tableVue";
 import DialogUser from "./Dialog/addUserInfo.vue";
@@ -62,11 +63,11 @@ export default {
     const data = reactive({
       configOption: ["name", "phone", "email"],
       // 批量删除的数据
-      tableBatchData:{
-          type: "tableLeftButton",
-          typename: "批量删除",
-          isSlot: "slot",
-          slotType: "tableLeftButton"
+      tableBatchData: {
+        type: "tableLeftButton",
+        typename: "批量删除",
+        isSlot: "slot",
+        slotType: "tableLeftButton"
       },
       // 表格配置参数
       tableConfig: {
@@ -130,9 +131,42 @@ export default {
       dialogVisible.value = false;
     };
     // 批量删除
-    const batchData = () =>{
-      console.log(data.tableBatchData)
-    }
+    const batchData = () => {
+      // 先判断 是否有选中数据
+      const reqDate = data.tableBatchData
+      if (reqDate.phone.length > 0) {
+        // 先提示删除不可逆
+        root
+          .$confirm("此操作将永久删除选中的记录, 是否继续?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+          .then(() => {
+            delSelectUsers(reqDate)
+              .then(res => {
+                  const resData = res.data
+                  if (resData.resCode === 0 ) {
+                      root.$message({
+                      type: "success",
+                      message: resData.message
+                    });
+                    // 重新请求用户列表
+                    // getUserInfo().then(res=>{}).catch(err=>{})
+                  }
+              })
+              .catch(err => {})
+          })
+          .catch(() => {
+            root.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      } else {
+        root.$message.error("您还未选中数据！");
+      }
+    };
     return {
       data,
       deleUser,

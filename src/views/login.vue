@@ -224,7 +224,7 @@ export default {
                   message: data.message,
                   type: "success"
                 });
-                console.log(data);
+                // console.log(data);
                 root.$router.push("/home");
               })
               .catch(err => {
