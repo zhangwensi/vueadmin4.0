@@ -19,7 +19,6 @@ export function common(){
             tableData.item = respData.data
             tableData.total = respData.total.cnt
             params.loadData.value = false
-            emit("update:tableDataFlash",false)
         })
         .catch(err=>{
             console.log(err)

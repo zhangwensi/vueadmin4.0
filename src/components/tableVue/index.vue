@@ -50,10 +50,6 @@ export default {
         tableData:{ 
             type:Object,
             default:()=>{}
-        },
-        tableDataFlash: {
-            type:Boolean,
-            default:false
         }
     },
     setup(props,{root,emit}) {
@@ -122,11 +118,6 @@ export default {
             data.tableData = newValue
         })
 
-        watch(()=>props.tableDataFlash,(newValue,oldValue)=>{
-            if(newValue === true) {
-                getUserData()
-            }
-        })
         onBeforeMount(()=>{
             initTableCfg()
         })
@@ -151,8 +142,12 @@ export default {
             let reqPage = data.pageSizeData
             getCurrentUaer({reqData,reqPage,loadData})
         }
+        // 刷新表格数据
+        const tableUserRefsh = ()=>{
+            getUserData()
+        }
         return {
-            data,loadData,handleSelectionChange,getUserData,handleSizeChange,handleCurrentChange
+            data,loadData,handleSelectionChange,getUserData,handleSizeChange,handleCurrentChange,tableUserRefsh
         }
     }
 }
