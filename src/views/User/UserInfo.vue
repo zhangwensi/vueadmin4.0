@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
     <div style="min-height:30px"></div>
-    <tableVue :tableCfg="data.tableConfig" :tableData.sync="data.tableBatchData" :tableDataFlash.sync ="data.isFlash">
+    <tableVue ref="tableRefsh" :tableCfg="data.tableConfig" :tableData.sync="data.tableBatchData">
       <template v-slot:state="slotDate">
         <el-switch
           active-color="#13ce66"
@@ -45,7 +45,7 @@
       </template>
     </tableVue>
     <!-- dialog -->
-    <DialogUser :flag="dialogVisible" @close="diaClose" :DialogFlash.sync ="data.isFlash"></DialogUser>
+    <DialogUser :flag="dialogVisible" @close="diaClose" @addRefData="refshData"></DialogUser>
   </div>
 </template>
 <script>
@@ -59,7 +59,7 @@ import DialogUser from "./Dialog/addUserInfo.vue";
 export default {
   name: "userInfo",
   components: { selectCp, tableVue, DialogUser },
-  setup(props, { root }) {
+  setup(props, { root,refs }) {
     const data = reactive({
       configOption: ["name", "phone", "email"],
       // 批量删除的数据
@@ -114,15 +114,31 @@ export default {
           requestUrl: requestUrl.getUser,
           data: ""
         }
-      },
-      isFlash:false
+      }
     });
     // 弹窗默认不显示
     const dialogVisible = ref(false);
     const hasSubmit = ref(false);
     const serach = ref("");
     const deleUser = params => {
-      console.log(params);
+      // 因后台接口与批量删除接口一致，需将传入的数据格式转换成对象形式
+      var reqData = JSON.parse(JSON.stringify(params))
+      delSelectUsers(reqData)
+              .then(res => {
+                console.log(res)
+                  const resData = res.data
+                  if (resData.resCode === 0 ) {
+                      root.$message({
+                      type: "success",
+                      message: resData.message
+                    });
+                    // 重新请求用户列表
+                    refshData()
+                  }
+              })
+              .catch(err => {
+
+              })
     };
     const editUser = params => {
       console.log(params);
@@ -131,6 +147,10 @@ export default {
     const diaClose = () => {
       dialogVisible.value = false;
     };
+    // 刷新数据 
+    const refshData = () =>{
+      refs.tableRefsh.tableUserRefsh()
+    }
     // 批量删除
     const batchData = () => {
       // 先判断 是否有选中数据
@@ -153,7 +173,7 @@ export default {
                       message: resData.message
                     });
                     // 重新请求用户列表
-                    data.isFlash = true
+                    refshData()
                   }
               })
               .catch(err => {
@@ -177,7 +197,8 @@ export default {
       dialogVisible,
       diaClose,
       serach,
-      batchData
+      batchData,
+      refshData
     };
   }
 };

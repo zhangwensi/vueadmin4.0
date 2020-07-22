@@ -78,7 +78,6 @@ export default {
             data.form.userName = ''
             data.form.realName = ''
             data.form.cityPickerData = {}
-            console.log(data.form.cityPickerData)
         }
 
         const dialogVisible = ref(false)
@@ -119,8 +118,8 @@ export default {
                             message: resp.data.message
                         })
                         close()
-                        // 变更父组件中的 isFlash 的值
-                        emit("update:DialogFlash",true)
+                        // 子组件回调父组件方法  用于刷新列表
+                        emit('addRefData')
                     }
                 }).catch(err=>{
                     console.log(err)
