@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
     <div style="min-height:30px"></div>
-    <tableVue :tableCfg="data.tableConfig" :tableData.sync="data.tableBatchData">
+    <tableVue :tableCfg="data.tableConfig" :tableData.sync="data.tableBatchData" :tableDataFlash.sync ="data.isFlash">
       <template v-slot:state="slotDate">
         <el-switch
           active-color="#13ce66"
@@ -45,7 +45,7 @@
       </template>
     </tableVue>
     <!-- dialog -->
-    <DialogUser :flag="dialogVisible" @close="diaClose"></DialogUser>
+    <DialogUser :flag="dialogVisible" @close="diaClose" :DialogFlash.sync ="data.isFlash"></DialogUser>
   </div>
 </template>
 <script>
@@ -114,7 +114,8 @@ export default {
           requestUrl: requestUrl.getUser,
           data: ""
         }
-      }
+      },
+      isFlash:false
     });
     // 弹窗默认不显示
     const dialogVisible = ref(false);
@@ -152,10 +153,12 @@ export default {
                       message: resData.message
                     });
                     // 重新请求用户列表
-                    // getUserInfo().then(res=>{}).catch(err=>{})
+                    data.isFlash = true
                   }
               })
-              .catch(err => {})
+              .catch(err => {
+
+              })
           })
           .catch(() => {
             root.$message({

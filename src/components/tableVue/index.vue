@@ -50,6 +50,10 @@ export default {
         tableData:{ 
             type:Object,
             default:()=>{}
+        },
+        tableDataFlash: {
+            type:Boolean,
+            default:false
         }
     },
     setup(props,{root,emit}) {
@@ -116,6 +120,12 @@ export default {
 
         watch(()=>respData1.item,(newValue,oldValue)=>{
             data.tableData = newValue
+        })
+
+        watch(()=>props.tableDataFlash,(newValue,oldValue)=>{
+            if(newValue === true) {
+                getUserData()
+            }
         })
         onBeforeMount(()=>{
             initTableCfg()
