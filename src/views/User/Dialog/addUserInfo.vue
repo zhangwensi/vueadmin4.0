@@ -36,7 +36,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="cancel">取消</el-button>
-                <el-button type="danger" size="small" @click="submit">确定</el-button>
+                <el-button type="danger" size="small" @click="submit" >确定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -78,6 +78,7 @@ export default {
             data.form.userName = ''
             data.form.realName = ''
             data.form.cityPickerData = {}
+            console.log(data.form.cityPickerData)
         }
 
         const dialogVisible = ref(false)
@@ -111,18 +112,19 @@ export default {
                 realname : data.form.realName,
                 state : data.form.radio,
             }
-            console.log(reqData)
                 addUsers(reqData).then(resp=>{
-                    if(resp.code === 0) {
+                    if(resp.data.resCode === 0) {
                         root.$message({
                             type:"success",
-                            message: resp.message
+                            message: resp.data.message
                         })
-                        clearData()
+                        close()
+                        // 变更父组件中的 isFlash 的值
+                        emit("update:DialogFlash",true)
                     }
                 }).catch(err=>{
                     console.log(err)
-                    clearData()
+                    close()
                 })
         }
         // 用户角色选择变更存值
