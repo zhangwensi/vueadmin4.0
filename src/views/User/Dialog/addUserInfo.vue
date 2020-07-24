@@ -1,24 +1,24 @@
 <template>
     <div>
         <el-dialog title="新增用户" width="630px" :close-on-click-modal="cancelClose" :visible.sync="dialogVisible" @close="close">
-            <el-form :model="data.form" class="labelStyle">
-                <el-form-item label="登录名称：" :label-width="data.formLabelWidth" >
-                    <el-input v-model="data.form.userName" class="addInput" placeholder="请输入用户邮箱"></el-input>
+            <el-form :model="data.form" class="labelStyle" ref="addRefForm">
+                <el-form-item label="登录名称：" :label-width="data.formLabelWidth" prop="userName">
+                    <el-input v-model="data.form.userName" class="addInput" placeholder="请输入用户邮箱 ，如1248018887@qq.com"></el-input>
                 </el-form-item>
-                <el-form-item label="用户邮箱：" :label-width="data.formLabelWidth" >
-                    <el-input v-model="data.form.userEmail" class="addInput" placeholder="请输入用户邮箱"></el-input>
+                <el-form-item label="用户邮箱：" :label-width="data.formLabelWidth" prop="userEmail">
+                    <el-input v-model="data.form.userEmail" class="addInput" placeholder="请输入用户邮箱，同上"></el-input>
                 </el-form-item>
-                <el-form-item label="用户密码：" :label-width="data.formLabelWidth" >
+                <el-form-item label="用户密码：" :label-width="data.formLabelWidth" prop="userPassword">
                     <el-input type="password" v-model="data.form.userPassword" class="addInput" placeholder="请输入用户密码"></el-input>
                 </el-form-item>
-                <el-form-item label="用户姓名：" :label-width="data.form.formLabelWidth" >
+                <el-form-item label="用户姓名：" :label-width="data.form.formLabelWidth" prop="realName">
                     <el-input v-model="data.form.realName" class="addInput" placeholder="请输入用户姓名"></el-input>
                 </el-form-item>
-                <el-form-item label="用户号码：" :label-width="data.form.formLabelWidth" >
+                <el-form-item label="用户号码：" :label-width="data.form.formLabelWidth" prop="phone">
                     <el-input v-model="data.form.phone" class="addInput" placeholder="请输入用户手机号码"></el-input>
                 </el-form-item>
-                <el-form-item label="地区：" :label-width="data.form.formLabelWidth" prop="ddd">
-                    <cityPicker :cityPickerData.sync="data.form.cityPickerData"/>
+                <el-form-item label="地区：" :label-width="data.form.formLabelWidth" prop="cityPickerData">
+                    <cityPicker ref="clearCityPicker" :cityPickerData.sync="data.form.cityPickerData" />
                 </el-form-item>
                 <el-form-item label="是否启用：" :label-width="data.form.formLabelWidth" >
                     <el-radio-group v-model="data.form.radio" @change="roleStatus">
@@ -26,7 +26,7 @@
                         <el-radio  label="1">禁止</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="用户角色：" :label-width="data.form.formLabelWidth" >
+                <el-form-item label="用户角色：" :label-width="data.form.formLabelWidth" prop="checkList">
                     <el-checkbox-group v-model="data.form.checkList" @change="roleChange" :max="1">
                         <el-checkbox label="管理员"></el-checkbox>
                         <el-checkbox label="普通用户"></el-checkbox>
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import {reactive,ref,watch} from "@vue/composition-api"
+import {reactive,ref,watch,refs} from "@vue/composition-api"
 import cityPicker from '@c/cityPicker'
 import { addUsers } from "@/api/addUser.js"
 export default {
@@ -72,12 +72,14 @@ export default {
         // 清空数据
         const clearData = () =>{
             dialogVisible.value = false
-            data.form.userEmail = ''
-            data.form.phone = null
-            data.form.userPassword = ''
-            data.form.userName = ''
-            data.form.realName = ''
+            // data.form.userEmail = ''
+            // data.form.phone = null
+            // data.form.userPassword = ''
+            // data.form.userName = ''
+            // data.form.realName = ''
             data.form.cityPickerData = {}
+            refs.addRefForm.resetFields()
+            clearCityData()
         }
 
         const dialogVisible = ref(false)
@@ -136,8 +138,12 @@ export default {
             // 后台状态是0或1
             console.log(val)
         }
+        // 删除cityPicker组件绑定的值
+        const clearCityData = () =>{
+            refs.clearCityPicker.clearPickerCityData()
+        }
         return {
-            dialogVisible,close,data,cancelClose,cancel,submit,roleChange,roleStatus,clearData
+            dialogVisible,close,data,cancelClose,cancel,submit,roleChange,roleStatus,clearData,clearCityData
         }
     }
 }

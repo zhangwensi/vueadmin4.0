@@ -28,6 +28,7 @@
     <tableVue ref="tableRefsh" :tableCfg="data.tableConfig" :tableData.sync="data.tableBatchData">
       <template v-slot:state="slotDate">
         <el-switch
+          @change="userSwitch(slotDate.data)"
           active-color="#13ce66"
           v-model="slotDate.data.state"
           inactive-value="1"
@@ -45,23 +46,24 @@
       </template>
     </tableVue>
     <!-- dialog -->
-    <DialogUser :flag="dialogVisible" @close="diaClose" @addRefData="refshData"></DialogUser>
+    <DialogUser :flag="dialogVisible" :editUser="data.editUserData" @close="diaClose" @addRefData="refshData"></DialogUser>
   </div>
 </template>
 <script>
 import { reactive, ref } from "@vue/composition-api";
 import { requestUrl } from "@/api/requestUrl.js";
 import { getUserInfo } from "@/api/getUserInfo.js";
-import { delSelectUsers } from "@/api/addUser.js";
+import { delSelectUsers,changSwitch } from "@/api/addUser.js";
 import selectCp from "@c/select";
 import tableVue from "@c/tableVue";
 import DialogUser from "./Dialog/addUserInfo.vue";
 export default {
   name: "userInfo",
   components: { selectCp, tableVue, DialogUser },
-  setup(props, { root,refs }) {
+  setup(props, { root, refs }) {
     const data = reactive({
       configOption: ["name", "phone", "email"],
+      editUserData: {},
       // 批量删除的数据
       tableBatchData: {
         type: "tableLeftButton",
@@ -69,6 +71,8 @@ export default {
         isSlot: "slot",
         slotType: "tableLeftButton"
       },
+      // 设置状态变更开关
+      userStateChang: false,
       // 表格配置参数
       tableConfig: {
         // 配置选择框是否展示
@@ -122,39 +126,51 @@ export default {
     const serach = ref("");
     const deleUser = params => {
       // 因后台接口与批量删除接口一致，需将传入的数据格式转换成对象形式
-      var reqData = JSON.parse(JSON.stringify(params))
-      delSelectUsers(reqData)
-              .then(res => {
-                console.log(res)
-                  const resData = res.data
-                  if (resData.resCode === 0 ) {
-                      root.$message({
-                      type: "success",
-                      message: resData.message
-                    });
-                    // 重新请求用户列表
-                    refshData()
-                  }
-              })
-              .catch(err => {
-
-              })
+      var reqData = JSON.parse(JSON.stringify(params));
+      root
+        .$confirm("此操作将永久删除选中的记录, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+        .then(() => {
+          delSelectUsers(reqData)
+            .then(res => {
+              console.log(res);
+              const resData = res.data;
+              if (resData.resCode === 0) {
+                root.$message({
+                  type: "success",
+                  message: resData.message
+                });
+                // 重新请求用户列表
+                refshData();
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
     };
     const editUser = params => {
-      console.log(params);
+      data.editUserData = Object.assign({},params)
+      console.log(data.editUserData)
     };
     // 关闭弹窗 父组件close与dialog中的emit中的close对应
     const diaClose = () => {
       dialogVisible.value = false;
     };
-    // 刷新数据 
-    const refshData = () =>{
-      refs.tableRefsh.tableUserRefsh()
-    }
+    // 刷新数据
+    const refshData = () => {
+      refs.tableRefsh.tableUserRefsh();
+    };
     // 批量删除
     const batchData = () => {
       // 先判断 是否有选中数据
-      const reqDate = data.tableBatchData
+      const reqDate = data.tableBatchData;
       if (reqDate.phone.length > 0) {
         // 先提示删除不可逆
         root
@@ -166,19 +182,17 @@ export default {
           .then(() => {
             delSelectUsers(reqDate)
               .then(res => {
-                  const resData = res.data
-                  if (resData.resCode === 0 ) {
-                      root.$message({
-                      type: "success",
-                      message: resData.message
-                    });
-                    // 重新请求用户列表
-                    refshData()
-                  }
+                const resData = res.data;
+                if (resData.resCode === 0) {
+                  root.$message({
+                    type: "success",
+                    message: resData.message
+                  });
+                  // 重新请求用户列表
+                  refshData();
+                }
               })
-              .catch(err => {
-
-              })
+              .catch(err => {});
           })
           .catch(() => {
             root.$message({
@@ -190,6 +204,28 @@ export default {
         root.$message.error("您还未选中数据！");
       }
     };
+    // 变更用户状态
+    const userSwitch = (params) => {
+      // 设置开关
+      if (data.userStateChang) { return false }
+      // 使用深拷贝避免直接改变原数组的数值
+      data.userStateChang = !data.userStateChang
+      const reqData = {
+        phone: Object.assign(params).phone,
+        state: Object.assign(params).state
+      }
+      // 发起请求
+      changSwitch(reqData).then(resp=>{
+        root.$message({
+          type:'success',
+          message:resp.data.message
+        })
+        data.userStateChang = !data.userStateChang
+      }).catch(err=>{
+        console.log(err)
+        data.userStateChang = !data.userStateChang
+      })
+    }
     return {
       data,
       deleUser,
@@ -198,7 +234,8 @@ export default {
       diaClose,
       serach,
       batchData,
-      refshData
+      refshData,
+      userSwitch
     };
   }
 };

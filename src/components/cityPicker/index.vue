@@ -198,10 +198,16 @@ export default {
         ],([province,city,area,town,provinceName,cityName,areaName,townName])=>{
             emit("update:cityPickerData",{resultData,resultDataName})
         })
-
+        // 清除该组件的绑定数据
+        const clearPickerCityData = () => {
+            data.province = ''
+            data.city = ''
+            data.area = ''
+            data.town = ''
+        }
         return {
             data,resultData,
-            getPerviceData,handlerChange,handlerCity,handlerArea,resetPickerData,addResult,handlerTown
+            getPerviceData,handlerChange,handlerCity,handlerArea,resetPickerData,addResult,handlerTown,clearPickerCityData
         }
     }
 }

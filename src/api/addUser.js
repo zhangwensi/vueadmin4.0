@@ -17,3 +17,23 @@ export const delSelectUsers = (data) => {
         data
     })
 }
+
+// 变更用户状态
+
+export const changSwitch = (data) =>{
+    return service.request({
+        method:'post',
+        baseURL:'/api/userState',
+        data
+    })
+}
+
+// 编辑时调用接口
+
+export const editUser = (data) => {
+    return service.request({
+        method:'post',
+        baseURL:'/api/editUserApi',
+        data
+    })
+}
