@@ -52,7 +52,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" @click="cancel">取消</el-button>
-        <el-button type="danger" size="small" @click="submit">确定</el-button>
+        <el-button type="danger" size="small" @click="submit" :loading="data.isLoading">确定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -61,7 +61,7 @@
 <script>
 import { reactive, ref, watch, refs } from "@vue/composition-api";
 import cityPicker from "@c/cityPicker";
-import { addUsers } from "@/api/addUser.js";
+import { addUsers ,editUserSubmit } from "@/api/addUser.js";
 export default {
   name: "addUserInfo",
   components: { cityPicker },
@@ -78,6 +78,7 @@ export default {
   setup(props, { refs, root, emit }) {
     const data = reactive({
       title: "",
+      isLoading: false,
       form: {
         radio: "1", //默认选中
         userEmail: "",
@@ -124,47 +125,78 @@ export default {
             newAddUser();
         } else {
             // 编辑用户 调用编辑接口 本版本暂不支持修改密码及地址
-
+            handleEditUser()
         }
     };
 
+    // 编辑用户方法封装
+    const handleEditUser = () => {
+        data.isLoading = true
+        const reqData = {
+            username: data.form.userName,
+            email: data.form.userEmail,
+            phone: data.form.phone,
+            role: data.form.checkList[0],
+            realname: data.form.realName,
+            state: data.form.radio
+        }
+        editUserSubmit(reqData).then(resp=>{
+            if (resp.data.resCode === 0) {
+                root.$message({
+                    type: "success",
+                    message: resp.data.message
+                });
+                close();
+                // 子组件回调父组件方法  用于刷新列表
+                emit("addRefData");
+                data.isLoading = false
+            }
+        }).catch(err=>{
+            console.log(err);
+            close();
+            data.isLoading = false
+        })
+    }
     // 新增用户方法封装
     const newAddUser = () => {
-      // 先处理 地址数据
-      const address = JSON.parse(
-        JSON.stringify(data.form.cityPickerData.resultDataName)
-      );
-      const realAddress =
-        address.provinceName +
-        address.cityName +
-        address.areaName +
-        address.townName;
-      // 先传入目标值 调用addUser接口
-      const reqData = {
-        username: data.form.userName,
-        email: data.form.userEmail,
-        password: data.form.userPassword,
-        phone: data.form.phone,
-        address: realAddress,
-        role: data.form.checkList[0],
-        realname: data.form.realName,
-        state: data.form.radio
-      };
-      addUsers(reqData)
-        .then(resp => {
-          if (resp.data.resCode === 0) {
-            root.$message({
-              type: "success",
-              message: resp.data.message
-            });
-            close();
-            // 子组件回调父组件方法  用于刷新列表
-            emit("addRefData");
-          }
+        data.isLoading = true
+        // 先处理 地址数据
+        const address = JSON.parse(
+            JSON.stringify(data.form.cityPickerData.resultDataName)
+        );
+        const realAddress =
+            address.provinceName +
+            address.cityName +
+            address.areaName +
+            address.townName;
+        // 先传入目标值 调用addUser接口
+        const reqData = {
+            username: data.form.userName,
+            email: data.form.userEmail,
+            password: data.form.userPassword,
+            phone: data.form.phone,
+            address: realAddress,
+            role: data.form.checkList[0],
+            realname: data.form.realName,
+            state: data.form.radio
+        };
+        addUsers(reqData)
+            .then(resp => {
+            if (resp.data.resCode === 0) {
+                root.$message({
+                type: "success",
+                message: resp.data.message
+                });
+                close();
+                // 子组件回调父组件方法  用于刷新列表
+                emit("addRefData");
+                data.isLoading = false
+            }
         })
         .catch(err => {
-          console.log(err);
-          close();
+            console.log(err);
+            close();
+            data.isLoading = false
         });
     };
 
@@ -211,7 +243,8 @@ export default {
       clearData,
       clearCityData,
       open,
-      newAddUser
+      newAddUser,
+      handleEditUser
     };
   }
 };

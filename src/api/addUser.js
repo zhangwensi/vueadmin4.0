@@ -37,3 +37,12 @@ export const editUser = (data) => {
         data
     })
 }
+
+// 提交编辑好的用户资料给后台接口
+export const editUserSubmit = (data) => {
+    return service.request({
+        method:'post',
+        baseURL:'/api/submitUserEdit',
+        data
+    })
+}

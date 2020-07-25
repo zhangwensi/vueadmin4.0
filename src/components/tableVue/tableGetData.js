@@ -15,6 +15,7 @@ export function common(){
             data:params.reqPage
         }
         getUserInfo(reqData).then(resp=>{
+            console.log(resp)
             let respData = resp.data
             tableData.item = respData.data
             tableData.total = respData.total.cnt
