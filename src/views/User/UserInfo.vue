@@ -21,7 +21,7 @@
         </div>
       </el-col>
       <el-col :span="4">
-        <el-button type="danger" class="pull-right" @click="dialogVisible=true">添加用户</el-button>
+        <el-button type="danger" class="pull-right" @click="handleAdd">添加用户</el-button>
       </el-col>
     </el-row>
     <div style="min-height:30px"></div>
@@ -156,8 +156,8 @@ export default {
         });
     };
     const editUser = params => {
+      dialogVisible.value = true
       data.editUserData = Object.assign({},params)
-      console.log(data.editUserData)
     };
     // 关闭弹窗 父组件close与dialog中的emit中的close对应
     const diaClose = () => {
@@ -226,6 +226,12 @@ export default {
         data.userStateChang = !data.userStateChang
       })
     }
+
+    // 新增用户 
+    const handleAdd = () => {
+       dialogVisible.value = true
+       data.editUserData = {}
+    }
     return {
       data,
       deleUser,
@@ -235,7 +241,8 @@ export default {
       serach,
       batchData,
       refshData,
-      userSwitch
+      userSwitch,
+      handleAdd
     };
   }
 };
