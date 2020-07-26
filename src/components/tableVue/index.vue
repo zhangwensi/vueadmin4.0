@@ -67,7 +67,7 @@ export default {
                 total:50
             }
         })
-        const { tableData,getTableData } =common()
+        const { tableData,getTableData,getSearchData } =common()
         const {pageSizeData,getUserListData,getCurrentUaer,respData1} =pageHook()
         const loadData = ref(false)
         // 初始化表格配置数据
@@ -146,8 +146,17 @@ export default {
         const tableUserRefsh = ()=>{
             getUserData()
         }
+        // 搜索刷新数据
+        const searchRefsh = (params) =>{
+            if (params.value !=='') {
+                let reqData = Object.assign({},params,{isLoading:loadData})
+                getSearchData(reqData)
+            } else {
+                root.$message.error('憨批！,请输入要搜索的条件')
+            }
+        }
         return {
-            data,loadData,handleSelectionChange,getUserData,handleSizeChange,handleCurrentChange,tableUserRefsh
+            data,loadData,handleSelectionChange,getUserData,handleSizeChange,handleCurrentChange,tableUserRefsh,searchRefsh
         }
     }
 }

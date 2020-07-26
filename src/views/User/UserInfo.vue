@@ -6,7 +6,7 @@
           <label>关键字：</label>
           <el-row :gutter="16">
             <el-col :span="3">
-              <selectCp :choseData.sync="data.configOption" />
+              <selectCp :choseData="data.configOption" :currentSelect.sync ="data.currentSelectType" />
               <!-- <el-select v-model="data.slectData">
                 <el-option v-for="item in data.selectValue" :key="item.value" :value="item.value" :label="item.label"></el-option>
               </el-select>-->
@@ -15,7 +15,10 @@
               <el-input v-model="serach" placeholder="请输入搜索条件"></el-input>
             </el-col>
             <el-col :span="2">
-              <el-button type="primary">搜索</el-button>
+              <el-button type="primary" @click="handleSearch">搜索</el-button>
+            </el-col>
+            <el-col :span="2">
+              <el-button type="danger" @click="handleRcover">回到第一页</el-button>
             </el-col>
           </el-row>
         </div>
@@ -52,7 +55,6 @@
 <script>
 import { reactive, ref } from "@vue/composition-api";
 import { requestUrl } from "@/api/requestUrl.js";
-import { getUserInfo } from "@/api/getUserInfo.js";
 import { delSelectUsers,changSwitch } from "@/api/addUser.js";
 import selectCp from "@c/select";
 import tableVue from "@c/tableVue";
@@ -62,7 +64,9 @@ export default {
   components: { selectCp, tableVue, DialogUser },
   setup(props, { root, refs }) {
     const data = reactive({
-      configOption: ["name", "phone", "email"],
+      configOption: ["realname", "phone", "email"],
+      // 当前搜索功能类型
+      currentSelectType:'',
       editUserData: {},
       // 批量删除的数据
       tableBatchData: {
@@ -162,6 +166,8 @@ export default {
     // 关闭弹窗 父组件close与dialog中的emit中的close对应
     const diaClose = () => {
       dialogVisible.value = false;
+      console.log(data.currentSelectType)
+      console.log(serach.value)
     };
     // 刷新数据
     const refshData = () => {
@@ -232,6 +238,16 @@ export default {
        dialogVisible.value = true
        data.editUserData = {}
     }
+    // 搜索功能
+    const handleSearch = () => {
+        refs.tableRefsh.searchRefsh({type:data.currentSelectType,value:serach.value})
+    }
+
+    // 用于搜索后恢复表格数据功能
+    const handleRcover = () => {
+      refs.tableRefsh.tableUserRefsh();
+    }
+
     return {
       data,
       deleUser,
@@ -242,7 +258,8 @@ export default {
       batchData,
       refshData,
       userSwitch,
-      handleAdd
+      handleAdd,
+      handleSearch,handleRcover
     };
   }
 };

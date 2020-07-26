@@ -16,3 +16,12 @@ export function getCityPicker  (data) {
         data
     })
 }
+
+// 用户信息搜索
+export const userInfoSearch = (data) => {
+    return service.request({
+        method:'post',
+        baseURL:'/api/userSearchApi',
+        data
+    })
+}
