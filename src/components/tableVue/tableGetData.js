@@ -1,4 +1,4 @@
-import { getUserInfo } from '@/api/getUserInfo.js'
+import { getUserInfo,userInfoSearch } from '@/api/getUserInfo.js'
 import {reactive} from "@vue/composition-api"
 export function common(){
     // 初始化数据
@@ -25,7 +25,18 @@ export function common(){
             params.loadData.value = false
         })
     }
+    // 获取搜索目标用户
+    const getSearchData = (params) => {
+        params.isLoading = true
+        userInfoSearch(params).then(resp=>{
+                tableData.item = resp.data.data
+                tableData.total = resp.data.total
+                params.isLoading = false
+            }).catch(err=>{
+              console.log(err)
+            })
+    }
     return {
-        tableData,getTableData
+        tableData,getTableData,getSearchData
     }
 }
